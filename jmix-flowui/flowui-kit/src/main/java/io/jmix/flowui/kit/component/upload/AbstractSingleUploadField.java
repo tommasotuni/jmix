@@ -16,11 +16,12 @@
 
 package io.jmix.flowui.kit.component.upload;
 
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.upload.*;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.shared.Registration;
@@ -32,28 +33,34 @@ import javax.annotation.Nullable;
  */
 @Tag("jmix-upload-field")
 @JsModule("./src/upload/jmix-upload-field.js")
-public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V>, V> implements HasLabel, HasHelper {
+public abstract class AbstractSingleUploadField<V> extends AbstractField<AbstractSingleUploadField<V>, V> implements HasLabel, HasHelper {
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
-    protected static final String VALUE_CONTAINER_CLASS_NAME = "jmix-upload-field-value-input-container";
+    protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
+    protected static final String CLEAR_COMPONENT_CLASS_NAME = "jmix-upload-field-clear";
 
     protected JmixUpload upload;
     protected HasComponents content;
-    protected HasComponents valueContainer;
+
+    protected Component fileNameComponent;
+    protected Component clearComponent;
 
     protected V internalValue;
 
-    public UploadFieldBase(V defaultValue) {
+    public AbstractSingleUploadField(V defaultValue) {
         super(defaultValue);
 
         content = createContentComponent();
         initContentComponent(content);
 
-        valueContainer = createValueContainer();
-        initValueContainer(valueContainer);
-
         upload = createUploadComponent();
         initUploadComponent(upload);
+
+        fileNameComponent = createFileNameComponent();
+        initFileNameComponent(fileNameComponent);
+
+        clearComponent = createClearComponent();
+        initClearComponent(clearComponent);
 
         attachContent(content);
     }
@@ -62,33 +69,40 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         return new JmixUpload();
     }
 
-    protected HasComponents createValueContainer() {
-        return new Div();
-    }
-
     protected HasComponents createContentComponent() {
         return new Div();
     }
 
-    protected Component createFileNameComponent(String fileName) {
-        Span span = new Span();
-        span.setText(fileName);
-        return span;
+    protected Component createFileNameComponent() {
+        return new Span();
     }
 
-    protected Component createClearButton() {
-        Icon icon = new Icon("lumo", "cross");
-        icon.addClickListener(this::onClearButtonClick);
-        return icon;
+    protected void initFileNameComponent(Component fileNameComponent) {
+        if (fileNameComponent instanceof HasStyle) {
+            ((HasStyle) fileNameComponent).addClassName(FILE_NAME_COMPONENT_CLASS_NAME);
+        }
     }
 
-    protected void onClearButtonClick(ClickEvent<Icon> clickEvent) {
+    protected Component createClearComponent() {
+        return new NativeButton();
+    }
+
+    protected void initClearComponent(Component clearComponent) {
+        if (clearComponent instanceof HasStyle) {
+            ((HasStyle) clearComponent).addClassName(CLEAR_COMPONENT_CLASS_NAME);
+        }
+        if (clearComponent instanceof ClickNotifier) {
+            ((ClickNotifier<?>) clearComponent).addClickListener(this::onClearButtonClick);
+        }
+    }
+
+    protected void onClearButtonClick(ClickEvent<?> clickEvent) {
         upload.clearFileList();
         setInternalValue(getEmptyValue());
     }
 
     protected void attachContent(HasComponents content) {
-        content.add(upload, (Component) valueContainer);
+        content.add(upload);
 
         content.getElement().setAttribute("slot", "input");
         getElement().appendChild(content.getElement());
@@ -97,12 +111,6 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
     protected void initUploadComponent(JmixUpload upload) {
         upload.setDropAllowed(false);
         upload.setReceiver(createUploadReceiver());
-    }
-
-    protected void initValueContainer(HasComponents component) {
-        if (component instanceof HasStyle) {
-            ((HasStyle) component).addClassName(VALUE_CONTAINER_CLASS_NAME);
-        }
     }
 
     protected void initContentComponent(HasComponents component) {
@@ -114,8 +122,12 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         }
     }
 
-    protected <T> T getValueContainer() {
-        return (T) valueContainer;
+    protected void addPresentationValueComponents() {
+        getContent().add(fileNameComponent, clearComponent);
+    }
+
+    protected <T extends HasComponents> T getContent() {
+        return (T) content;
     }
 
     protected void attachSucceededListener(ComponentEventListener<SucceededEvent> listener) {
@@ -201,11 +213,11 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<UploadFieldBase<V>, V>> listener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleUploadField<V>, V>> listener) {
         @SuppressWarnings("rawtypes")
         ComponentEventListener componentListener = event -> {
-            ComponentValueChangeEvent<UploadFieldBase<V>, V> valueChangeEvent =
-                    (ComponentValueChangeEvent<UploadFieldBase<V>, V>) event;
+            ComponentValueChangeEvent<AbstractSingleUploadField<V>, V> valueChangeEvent =
+                    (ComponentValueChangeEvent<AbstractSingleUploadField<V>, V>) event;
             listener.valueChanged(valueChangeEvent);
         };
 
@@ -224,10 +236,10 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         V oldValue = internalValue;
         internalValue = value;
 
-        // update file name
+        // update presentation
         setPresentationValue(value, uploadedFileName);
 
-        ComponentValueChangeEvent<UploadFieldBase<V>, V> event =
+        ComponentValueChangeEvent<AbstractSingleUploadField<V>, V> event =
                 new ComponentValueChangeEvent<>(this, this, oldValue, fromClient);
         fireEvent(event);
     }
@@ -237,5 +249,26 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         // do nothing
     }
 
-    protected abstract void setPresentationValue(@Nullable V newPresentationValue, @Nullable String uploadedFileName);
+    protected void setPresentationValue(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
+        getContent().remove(fileNameComponent, clearComponent);
+
+        if (newPresentationValue == null) {
+            return;
+        }
+
+        String fileName = generateFileName(newPresentationValue, uploadedFileName);
+        if (fileNameComponent instanceof HasText) {
+            ((HasText) fileNameComponent).setText(Strings.nullToEmpty(fileName));
+        }
+
+        addPresentationValueComponents();
+    }
+
+    @Nullable
+    protected String generateFileName(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
+        if (!Strings.isNullOrEmpty(uploadedFileName)) {
+            return uploadedFileName;
+        }
+        return null;
+    }
 }

@@ -17,8 +17,6 @@
 package io.jmix.flowui.kit.component.upload;
 
 import com.google.common.base.Strings;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
@@ -30,7 +28,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class JmixUploadField extends UploadFieldBase<byte[]> {
+public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
 
     private static final String DEFAULT_FILENAME = "attachment";
 
@@ -42,25 +40,6 @@ public class JmixUploadField extends UploadFieldBase<byte[]> {
 
     public JmixUploadField(byte[] defaultValue) {
         super(defaultValue);
-    }
-
-    @Override
-    protected void setPresentationValue(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
-        Div valueContainer = getValueContainer();
-        valueContainer.removeAll();
-
-        if (newPresentationValue == null) {
-            return;
-        }
-
-        String fileName = Strings.isNullOrEmpty(uploadedFileName)
-                ? convertValueToFileName(newPresentationValue)
-                : uploadedFileName;
-
-        Component span = createFileNameComponent(fileName);
-        Component clearBtn = createClearButton();
-
-        valueContainer.add(span, clearBtn);
     }
 
     /**
@@ -81,6 +60,16 @@ public class JmixUploadField extends UploadFieldBase<byte[]> {
      */
     public void setFileName(@Nullable String fileName) {
         this.fileName = fileName;
+    }
+
+    @Nullable
+    @Override
+    protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
+        String fileName =  super.generateFileName(newPresentationValue, uploadedFileName);
+
+        return Strings.isNullOrEmpty(fileName)
+                ? convertValueToFileName(newPresentationValue)
+                : fileName;
     }
 
     protected String convertValueToFileName(byte[] newPresentationValue) {

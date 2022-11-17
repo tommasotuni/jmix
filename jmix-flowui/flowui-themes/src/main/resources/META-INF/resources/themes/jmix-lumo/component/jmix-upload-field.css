@@ -15,12 +15,46 @@
  */
 
 .jmix-upload-field-input-container {
+    align-items: center;
     display: flex;
+    gap: var(--lumo-space-s);
+}
+
+.jmix-upload-field-file-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: var(--lumo-line-height-m)
 }
 
 .jmix-upload-field-value-input-container {
     display: flex;
     align-items: center;
+}
+
+.jmix-upload-field-clear {
+    color: var(--lumo-contrast-60pct);
+    font-size: var(--lumo-icon-size-m);
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.jmix-upload-field-clear:focus {
+    outline: none;
+    border-radius: var(--lumo-border-radius-s);
+    box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
+}
+
+.jmix-upload-field-clear::before {
+    content: var(--lumo-icons-cross);
+    font-family: 'lumo-icons';
+    display: block;
+}
+
+.jmix-upload-field-clear:hover {
+    color: var(--lumo-contrast-90pct);
 }
 
 .jmix-upload-dialog-content {
