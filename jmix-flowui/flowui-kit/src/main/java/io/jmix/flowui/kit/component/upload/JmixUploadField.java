@@ -63,13 +63,22 @@ public class JmixUploadField extends UploadFieldBase<byte[]> {
         valueContainer.add(span, clearBtn);
     }
 
-    // todo rp javaDocs
+    /**
+     * @return file name to be shown in the component next to upload button
+     */
     @Nullable
     public String getFileName() {
         return fileName;
     }
 
-    // todo rp javaDocs
+    /**
+     * Sets file name to be shown in the component next to upload button.
+     * The file name of the newly uploaded file will rewrite the caption.
+     * <p>
+     * The default value is "attachment (file_size Kb)".
+     *
+     * @param fileName file name to show
+     */
     public void setFileName(@Nullable String fileName) {
         this.fileName = fileName;
     }

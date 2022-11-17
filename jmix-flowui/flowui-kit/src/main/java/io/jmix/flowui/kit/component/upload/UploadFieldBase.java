@@ -155,8 +155,12 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         upload.setEnabled(enabled);
     }
 
-    // todo rp API
-
+    /**
+     * Add a progress listener that is informed on upload progress.
+     *
+     * @param listener progress listener to add
+     * @return registration for removal of listener
+     */
     public Registration addProgressListener(ComponentEventListener<ProgressUpdateEvent> listener) {
         return upload.addProgressListener(listener);
     }
@@ -184,9 +188,16 @@ public abstract class UploadFieldBase<V> extends AbstractField<UploadFieldBase<V
         return upload.addSucceededListener(listener);
     }
 
-
     public Registration addFileRejectedListener(ComponentEventListener<FileRejectedEvent> listener) {
         return upload.addFileRejectedListener(listener);
+    }
+
+    public void setMaxFileSize(int maxFileSize) {
+        upload.setMaxFileSize(maxFileSize);
+    }
+
+    public void setAcceptedFileTypes(String... acceptedFileTypes) {
+        upload.setAcceptedFileTypes(acceptedFileTypes);
     }
 
     @Override

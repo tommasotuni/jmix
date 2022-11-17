@@ -55,13 +55,19 @@ class JmixUpload extends Upload {
         this.$.fileList.hidden = true;
 
         this.addEventListener("upload-progress", this._onUploadProgressEvent.bind(this));
+        this.addEventListener('upload-success', this._onUploadSuccessEvent.bind(this));
+
+        this.addEventListener('file-abort', this._closeUploadDialogOnEvent.bind(this));
+        this.addEventListener('file-reject', this._closeUploadDialogOnEvent.bind(this));
+        this.addEventListener('upload-error', this._closeUploadDialogOnEvent.bind(this));
+        this.addEventListener('upload-start', this._openUploadDialogOnEvent.bind(this));
 
         this._initUploadDialog();
     }
 
     static get observers() {
         return [
-            '_onEnabledChanged(enabled)',
+            '_onEnabledPropertyChanged(enabled)',
         ]
     }
 
@@ -95,54 +101,18 @@ class JmixUpload extends Upload {
         super._onAddFilesClick(e)
     }
 
-    // todo rp add our listeners instead?
-    /**
-     * @param event
-     * @private
-     * #override
-     */
-    _onUploadStart(event) {
-        super._onUploadStart(event);
+    _onUploadSuccessEvent(event) {
+        // After uploading button is not active because it reached files limit.
+        // Clear uploaded files to enable upload button.
+        this.files = [];
+        this._closeUploadDialogOnEvent(event);
+    }
+
+    _openUploadDialogOnEvent(event) {
         this._setUploadDialogOpened(true);
     }
 
-    /**
-     * @param event
-     * @private
-     * #override
-     */
-    _onUploadSuccess(event) {
-        super._onUploadSuccess(event);
-        this._setUploadDialogOpened(false);
-    }
-
-    /**
-     * @param event
-     * @private
-     * #override
-     */
-    _onUploadError(event) {
-        super._onUploadError(event);
-        this._setUploadDialogOpened(false);
-    }
-
-    /**
-     * @param event
-     * @private
-     * #override
-     */
-    _onFileReject(event) {
-        super._onFileReject(event);
-        this._setUploadDialogOpened(false);
-    }
-
-    /**
-     * @param event
-     * @private
-     * #override
-     */
-    _onFileAbort(event) {
-        super._onFileAbort(event);
+    _closeUploadDialogOnEvent(event) {
         this._setUploadDialogOpened(false);
     }
 
@@ -209,7 +179,7 @@ class JmixUpload extends Upload {
         this.dispatchEvent(new CustomEvent('file-abort', {detail: {file: this.file, xhr: this.file.xhr}}));
     }
 
-    _onEnabledChanged(enabled) {
+    _onEnabledPropertyChanged(enabled) {
         // disable upload component
         const uploadComponent = this.shadowRoot.querySelector('slot').children[0];
         if (uploadComponent) {
