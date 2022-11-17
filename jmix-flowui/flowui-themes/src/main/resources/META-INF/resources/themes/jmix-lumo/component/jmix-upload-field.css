@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.kit.component.upload;
+.jmix-upload-field-input-container {
+    display: flex;
+}
 
-public class UploadField extends UploadFieldBase<byte[]> {
+.jmix-upload-field-value-input-container {
+    display: flex;
+    align-items: center;
+}
 
-    public UploadField() {
-        this(new byte[0]);
-    }
+.jmix-upload-dialog-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 20em;
+}
 
-    public UploadField(byte[] defaultValue) {
-        super(defaultValue);
-    }
-
-    @Override
-    protected void setPresentationValue(byte[] newPresentationValue) {
-        // todo rp
-    }
+.jmix-upload-dialog-cancel-button {
+    align-self: end;
 }
