@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
 
@@ -74,7 +75,7 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
 
     protected String convertValueToFileName(byte[] newPresentationValue) {
         return Strings.isNullOrEmpty(getFileName())
-                ? String.format(DEFAULT_FILENAME + "(%s)", FileUtils.byteCountToDisplaySize(newPresentationValue.length))
+                ? String.format(DEFAULT_FILENAME + " (%s)", FileUtils.byteCountToDisplaySize(newPresentationValue.length))
                 : getFileName();
     }
 
@@ -102,5 +103,9 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
         }
 
         throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
+    }
+
+    protected boolean valueEquals(@Nullable byte[] a, @Nullable byte[] b) {
+        return Arrays.equals(a, b);
     }
 }

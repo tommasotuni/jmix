@@ -16,7 +16,9 @@
 
 package io.jmix.flowui.component.upload;
 
+import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.shared.Registration;
+import io.jmix.core.Messages;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
 import io.jmix.flowui.component.delegate.FieldDelegate;
@@ -31,15 +33,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 
 public class UploadField extends JmixUploadField implements SupportsValueSource<byte[]>, SupportsValidation<byte[]>,
         HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
+    protected Messages messages;
 
     protected FieldDelegate<UploadField, byte[], byte[]> fieldDelegate;
-
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -48,11 +49,20 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        autowireDependencies();
         initComponent();
+    }
+
+    protected void autowireDependencies() {
+        messages = applicationContext.getBean(Messages.class);
     }
 
     protected void initComponent() {
         fieldDelegate = createFieldDelegate();
+
+        if (fileNameComponent instanceof HasText) {
+            ((HasText) fileNameComponent).setText(generateFileName(null, null));
+        }
 
         attachSucceededListener(this::onSucceededEvent);
     }
@@ -103,7 +113,13 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
         fieldDelegate.setInvalid(invalid);
     }
 
-    protected boolean valueEquals(@Nullable byte[] a, @Nullable byte[] b) {
-        return Arrays.equals(a, b);
+    @Nullable
+    @Override
+    protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
+        // Invoked from constructor, messages can be null
+        if (messages != null && newPresentationValue == null) {
+            return messages.getMessage("uploadField.fileNotSelected");
+        }
+        return super.generateFileName(newPresentationValue, uploadedFileName);
     }
 }

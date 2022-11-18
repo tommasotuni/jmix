@@ -39,6 +39,8 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
     protected static final String CLEAR_COMPONENT_CLASS_NAME = "jmix-upload-field-clear";
 
+    protected static final String FILE_NOT_SELECTED = "File is not selected";
+
     protected JmixUpload upload;
     protected HasComponents content;
 
@@ -81,6 +83,10 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         if (fileNameComponent instanceof HasStyle) {
             ((HasStyle) fileNameComponent).addClassName(FILE_NAME_COMPONENT_CLASS_NAME);
         }
+        if (fileNameComponent instanceof HasText) {
+            String fileName = Strings.nullToEmpty(generateFileName(null, null));
+            ((HasText) fileNameComponent).setText(fileName);
+        }
     }
 
     protected Component createClearComponent() {
@@ -102,7 +108,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected void attachContent(HasComponents content) {
-        content.add(upload);
+        content.add(upload, fileNameComponent);
 
         content.getElement().setAttribute("slot", "input");
         getElement().appendChild(content.getElement());
@@ -120,10 +126,6 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         if (component instanceof HasSize) {
             ((HasSize) component).setWidthFull();
         }
-    }
-
-    protected void addPresentationValueComponents() {
-        getContent().add(fileNameComponent, clearComponent);
     }
 
     protected <T extends HasComponents> T getContent() {
@@ -252,20 +254,24 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     protected void setPresentationValue(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
         getContent().remove(fileNameComponent, clearComponent);
 
-        if (newPresentationValue == null) {
-            return;
-        }
-
         String fileName = generateFileName(newPresentationValue, uploadedFileName);
         if (fileNameComponent instanceof HasText) {
             ((HasText) fileNameComponent).setText(Strings.nullToEmpty(fileName));
         }
 
-        addPresentationValueComponents();
+        getContent().add(fileNameComponent);
+
+        if (newPresentationValue != null) {
+            getContent().add(clearComponent);
+        }
     }
 
     @Nullable
     protected String generateFileName(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
+        if (newPresentationValue == null) {
+            return FILE_NOT_SELECTED;
+        }
+
         if (!Strings.isNullOrEmpty(uploadedFileName)) {
             return uploadedFileName;
         }

@@ -24,7 +24,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    line-height: var(--lumo-line-height-m)
+    line-height: var(--lumo-line-height-m);
 }
 
 .jmix-upload-field-value-input-container {

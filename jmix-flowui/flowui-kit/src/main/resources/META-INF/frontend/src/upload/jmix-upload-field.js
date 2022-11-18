@@ -35,6 +35,10 @@ const uploadField = css`
   :host::before {
     display: inline-flex;
   }
+  
+  [class$='container'] { {
+    width: var(--jmix-upload-field-default-width, var(--vaadin-field-default-width, 16.5em));
+  }
 `;
 
 registerStyles('jmix-upload-field', [inputFieldShared, uploadField], {
@@ -54,6 +58,10 @@ export class JmixUploadField extends InputFieldMixin(ThemableMixin(ElementMixin(
                     background-color: transparent;
                     padding: 0;
                     cursor: auto;
+                }
+
+                vaadin-input-container:after {
+                    border: 0;
                 }
             </style>
 

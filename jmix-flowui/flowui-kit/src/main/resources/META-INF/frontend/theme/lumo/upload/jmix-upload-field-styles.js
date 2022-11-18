@@ -81,7 +81,7 @@ const uploadField = css`
   }
 
   [part='input-field'] ::slotted(*) {
-    padding-left: 0;
+    padding: 0;
     -webkit-mask-image: none;
     mask-image: none;
   }
