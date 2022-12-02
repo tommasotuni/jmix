@@ -20,11 +20,24 @@
     gap: var(--lumo-space-s);
 }
 
-.jmix-upload-field-file-name {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    line-height: var(--lumo-line-height-m);
+vaadin-button.jmix-upload-field-file-name {
+    background-color: transparent;
+    cursor: pointer;
+}
+vaadin-button.jmix-upload-field-file-name:hover {
+    text-decoration: underline;
+}
+
+vaadin-button.jmix-upload-field-file-name.empty {
+    color: var(--lumo-body-text-color);
+    cursor: default;
+}
+
+/* todo pr does not work? move to components dir? */
+vaadin-button.jmix-upload-field-file-name[active]::before,
+vaadin-button.jmix-upload-field-file-name:hover::before,
+vaadin-button.jmix-upload-field-file-name:hover::after {
+    opacity: 0;
 }
 
 .jmix-upload-field-value-input-container {

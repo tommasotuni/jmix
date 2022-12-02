@@ -18,10 +18,10 @@ package io.jmix.flowui.kit.component.upload;
 
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.upload.*;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.shared.Registration;
@@ -37,6 +37,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
     protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
+    protected static final String FILE_NAME_COMPONENT_EMPTY_CLASS_NAME = "empty";
     protected static final String CLEAR_COMPONENT_CLASS_NAME = "jmix-upload-field-clear";
 
     protected static final String FILE_NOT_SELECTED = "File is not selected";
@@ -76,17 +77,18 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected Component createFileNameComponent() {
-        return new Span();
+        return new Button();
     }
 
     protected void initFileNameComponent(Component fileNameComponent) {
-        if (fileNameComponent instanceof HasStyle) {
-            ((HasStyle) fileNameComponent).addClassName(FILE_NAME_COMPONENT_CLASS_NAME);
-        }
+        addClassNames(fileNameComponent, FILE_NAME_COMPONENT_CLASS_NAME, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
+
         if (fileNameComponent instanceof HasText) {
             String fileName = Strings.nullToEmpty(generateFileName(null, null));
             ((HasText) fileNameComponent).setText(fileName);
         }
+
+        setComponentEnabled(fileNameComponent, false);
     }
 
     protected Component createClearComponent() {
@@ -94,9 +96,8 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected void initClearComponent(Component clearComponent) {
-        if (clearComponent instanceof HasStyle) {
-            ((HasStyle) clearComponent).addClassName(CLEAR_COMPONENT_CLASS_NAME);
-        }
+        addClassNames(clearComponent, CLEAR_COMPONENT_CLASS_NAME);
+
         if (clearComponent instanceof ClickNotifier) {
             ((ClickNotifier<?>) clearComponent).addClickListener(this::onClearButtonClick);
         }
@@ -120,9 +121,8 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected void initContentComponent(HasComponents component) {
-        if (component instanceof HasStyle) {
-            ((HasStyle) component).addClassName(INPUT_CONTAINER_CLASS_NAME);
-        }
+        addClassNames(component, INPUT_CONTAINER_CLASS_NAME);
+
         if (component instanceof HasSize) {
             ((HasSize) component).setWidthFull();
         }
@@ -253,6 +253,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
 
     protected void setPresentationValue(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
         getContent().remove(fileNameComponent, clearComponent);
+        removeClassNames(fileNameComponent, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
 
         String fileName = generateFileName(newPresentationValue, uploadedFileName);
         if (fileNameComponent instanceof HasText) {
@@ -261,9 +262,13 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
 
         getContent().add(fileNameComponent);
 
-        if (newPresentationValue != null) {
+        if (newPresentationValue == null) {
+            addClassNames(fileNameComponent, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
+        } else {
             getContent().add(clearComponent);
         }
+
+        setComponentEnabled(fileNameComponent, newPresentationValue != null);
     }
 
     @Nullable
@@ -276,5 +281,23 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
             return uploadedFileName;
         }
         return null;
+    }
+
+    protected void addClassNames(HasElement component, String... classNames) {
+        if (component instanceof HasStyle) {
+            ((HasStyle) component).addClassNames(classNames);
+        }
+    }
+
+    protected void removeClassNames(HasElement component, String... classNames) {
+        if (component instanceof HasStyle) {
+            ((HasStyle) component).removeClassNames(classNames);
+        }
+    }
+
+    protected void setComponentEnabled(Component component, boolean enabled) {
+        if (component instanceof HasEnabled) {
+            ((HasEnabled) component).setEnabled(enabled);
+        }
     }
 }

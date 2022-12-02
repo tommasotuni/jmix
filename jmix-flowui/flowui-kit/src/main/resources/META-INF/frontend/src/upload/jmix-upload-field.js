@@ -24,7 +24,7 @@ import {inputFieldShared} from '@vaadin/field-base/src/styles/input-field-shared
 import {css, registerStyles, ThemableMixin} from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
 /*
-* CAUTION! Styles for 'jmix-value-picker' component are applied in wrong order.
+* CAUTION! Styles for 'jmix-upload-field' component are applied in wrong order.
 * The 'inputFieldShared' from 'field-base/src/styles/input-field-shared-styles.js'
 * takes precedence over
 * 'inputFieldShared' from 'vaadin-lumo-styles/mixins/input-field-shared.js'
@@ -37,7 +37,7 @@ const uploadField = css`
   }
   
   [class$='container'] { {
-    width: var(--jmix-upload-field-default-width, var(--vaadin-field-default-width, 16.5em));
+    width: var(--jmix-upload-field-default-width, var(--vaadin-field-default-width, auto));
   }
 `;
 
