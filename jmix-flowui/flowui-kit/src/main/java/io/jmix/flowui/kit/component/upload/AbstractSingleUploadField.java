@@ -19,6 +19,7 @@ package io.jmix.flowui.kit.component.upload;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
@@ -88,6 +89,10 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
             ((HasText) fileNameComponent).setText(fileName);
         }
 
+        if (fileNameComponent instanceof Button) {
+            ((Button) fileNameComponent).addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        }
+
         setComponentEnabled(fileNameComponent, false);
     }
 
@@ -104,6 +109,9 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected void onClearButtonClick(ClickEvent<?> clickEvent) {
+        if (!isEnabled() || isReadOnly()) {
+            return;
+        }
         upload.clearFileList();
         setInternalValue(getEmptyValue());
     }
@@ -141,10 +149,11 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     @Override
-    public void setValue(V value) {
+    public void setValue(@Nullable V value) {
         setInternalValue(value);
     }
 
+    @Nullable
     @Override
     public V getValue() {
         return internalValue;
@@ -159,7 +168,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
 
-        upload.setReadOnly(readOnly);
+        updateReadOnly();
     }
 
     @Override
@@ -276,7 +285,6 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         if (newPresentationValue == null) {
             return FILE_NOT_SELECTED;
         }
-
         if (!Strings.isNullOrEmpty(uploadedFileName)) {
             return uploadedFileName;
         }
@@ -299,5 +307,10 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         if (component instanceof HasEnabled) {
             ((HasEnabled) component).setEnabled(enabled);
         }
+    }
+
+    protected void updateReadOnly() {
+        upload.setReadOnly(isReadOnly());
+        clearComponent.setVisible(!isReadOnly());
     }
 }

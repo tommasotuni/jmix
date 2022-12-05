@@ -138,6 +138,7 @@ class JmixUpload extends Upload {
                     return;
                 }
                 const uploadFile = uploadFileElements[0];
+
                 // hide control buttons
                 const uploadFileButtons = uploadFile.shadowRoot.querySelectorAll("button");
                 if (uploadFileButtons.length > 0) {
@@ -146,8 +147,9 @@ class JmixUpload extends Upload {
                     }
                 }
 
-                // 'vaadin-upload-file' does automatically update bounded elements,
-                // therefore firstly unset the file, then set new one.
+                // 'vaadin-upload-file' automatically updates bounded elements,
+                // but using manually approach, it works only after value is unset.
+                // Therefore firstly unset the file, then set new one.
                 uploadFile.file = {};
                 uploadFile.file = uploadContext.file;
             } else {

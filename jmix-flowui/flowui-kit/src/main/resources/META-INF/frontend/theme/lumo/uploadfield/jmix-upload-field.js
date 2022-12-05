@@ -15,4 +15,4 @@
  */
 
 import './jmix-upload-field-styles.js';
-import '../../../src/upload/jmix-upload-field.js';
+import '../../../src/uploadfield/jmix-upload-field.js';

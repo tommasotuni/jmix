@@ -16,6 +16,9 @@
 
 package io.jmix.flowui.component.upload;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ClickNotifier;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Messages;
@@ -25,6 +28,7 @@ import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.ValueSource;
+import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.JmixUploadField;
 import org.springframework.beans.BeansException;
@@ -39,6 +43,7 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
 
     protected ApplicationContext applicationContext;
     protected Messages messages;
+    protected Downloader downloader;
 
     protected FieldDelegate<UploadField, byte[], byte[]> fieldDelegate;
 
@@ -55,16 +60,27 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
 
     protected void autowireDependencies() {
         messages = applicationContext.getBean(Messages.class);
+        downloader = applicationContext.getBean(Downloader.class);
     }
 
     protected void initComponent() {
         fieldDelegate = createFieldDelegate();
 
+        // Takes the file name from Messages
         if (fileNameComponent instanceof HasText) {
             ((HasText) fileNameComponent).setText(generateFileName(null, null));
         }
 
         attachSucceededListener(this::onSucceededEvent);
+    }
+
+    @Override
+    protected void initFileNameComponent(Component fileNameComponent) {
+        super.initFileNameComponent(fileNameComponent);
+
+        if (fileNameComponent instanceof ClickNotifier) {
+            ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
+        }
     }
 
     protected FieldDelegate<UploadField, byte[], byte[]> createFieldDelegate() {
@@ -113,7 +129,17 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
         fieldDelegate.setInvalid(invalid);
     }
 
-    @Nullable
+    protected void onFileNameClick(ClickEvent<?> clickEvent) {
+        if (!isEnabled()) {
+            return;
+        }
+
+        byte[] value = getValue();
+        if (value != null) {
+            downloader.download(value, generateFileName(value, uploadedFileName));
+        }
+    }
+
     @Override
     protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
         // Invoked from constructor, messages can be null

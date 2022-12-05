@@ -34,6 +34,7 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
     private static final String DEFAULT_FILENAME = "attachment";
 
     protected String fileName;
+    protected String uploadedFileName;
 
     public JmixUploadField() {
         this(null);
@@ -63,7 +64,14 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
         this.fileName = fileName;
     }
 
+    /**
+     * @return name of the uploaded file or {@code null} if no file was uploaded using "Upload" button
+     */
     @Nullable
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
+
     @Override
     protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
         String fileName =  super.generateFileName(newPresentationValue, uploadedFileName);
@@ -88,6 +96,8 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
         if (receiver instanceof MemoryBuffer) {
+            uploadedFileName = event.getFileName();
+
             InputStream inputStream = ((MemoryBuffer) receiver).getInputStream();
             byte[] value;
             try {
@@ -98,7 +108,7 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
                 IOUtils.closeQuietly(inputStream);
             }
 
-            setInternalValue(value, event.getFileName(), true);
+            setInternalValue(value, uploadedFileName, true);
             return;
         }
 

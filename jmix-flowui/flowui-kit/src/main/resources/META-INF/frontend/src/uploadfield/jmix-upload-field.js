@@ -28,7 +28,7 @@ import {css, registerStyles, ThemableMixin} from '@vaadin/vaadin-themable-mixin/
 * The 'inputFieldShared' from 'field-base/src/styles/input-field-shared-styles.js'
 * takes precedence over
 * 'inputFieldShared' from 'vaadin-lumo-styles/mixins/input-field-shared.js'
-* that is registered in 'jmix-value-picker-styles.js'. However, the same approach of
+* that is registered in 'jmix-upload-field-styles.js'. However, the same approach of
 * registering styles works correctly for Vaadin components.
 */
 const uploadField = css`
