@@ -33,8 +33,9 @@ import javax.annotation.Nullable;
  * @param <V> value type
  */
 @Tag("jmix-upload-field")
-@JsModule("./src/upload/jmix-upload-field.js")
-public abstract class AbstractSingleUploadField<V> extends AbstractField<AbstractSingleUploadField<V>, V> implements HasLabel, HasHelper {
+@JsModule("./src/uploadfield/jmix-upload-field.js")
+public abstract class AbstractSingleUploadField<V> extends AbstractField<AbstractSingleUploadField<V>, V>
+        implements HasLabel, HasHelper, HasSize, HasStyle {
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
     protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
@@ -221,6 +222,10 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
 
     public void setAcceptedFileTypes(String... acceptedFileTypes) {
         upload.setAcceptedFileTypes(acceptedFileTypes);
+    }
+
+    public void setUploadButtonText(String text) {
+        // todo rp?
     }
 
     @Override

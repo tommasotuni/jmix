@@ -2780,6 +2780,41 @@
         <xs:attribute name="description" type="resourceString"/>
     </xs:complexType>
 
+    <!-- UploadField -->
+
+    <xs:complexType name="uploadFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="baseUploadFieldComponent">
+                <xs:attribute name="fileName" type="resourceString"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- FileStorageUploadField -->
+
+    <xs:complexType name="fileStorageUploadFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="baseUploadFieldComponent">
+                <!--todo rp -->
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="baseUploadFieldComponent">
+        <xs:complexContent>
+            <!--todo rp colspan in baseComponent?-->
+            <xs:extension base="baseFieldComponent">
+
+                <xs:attribute name="uploadButtonText" type="resourceString"/>
+
+                <xs:attribute name="maxFileSize" type="xs:int"/>
+                <xs:attribute name="acceptedFileTypes" type="xs:string"/>
+
+                <xs:attributeGroup ref="hasRequired"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!--    HTML-->
     <!-- Anchor-->
     <xs:complexType name="anchor">
@@ -3018,6 +3053,7 @@
                 <xs:element name="loginForm" type="loginFormComponent"/>
                 <xs:element name="loginOverlay" type="loginOverlayComponent"/>
                 <xs:element name="simplePagination" type="simplePaginationComponent"/>
+                <xs:element name="uploadField" type="uploadFieldComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>
