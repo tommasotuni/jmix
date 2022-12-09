@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
+public class JmixUploadField extends AbstractSingleFileUploadField<byte[]> {
 
     private static final String DEFAULT_FILENAME = "attachment";
 
@@ -73,26 +73,23 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
     }
 
     @Override
-    protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
-        String fileName =  super.generateFileName(newPresentationValue, uploadedFileName);
-
+    protected String generateFileName() {
+        if (getValue() == null) {
+            return FILE_NOT_SELECTED;
+        }
+        if (!Strings.isNullOrEmpty(uploadedFileName)) {
+            return uploadedFileName;
+        }
         return Strings.isNullOrEmpty(fileName)
-                ? convertValueToFileName(newPresentationValue)
+                ? convertValueToFileName(getValue())
                 : fileName;
     }
 
-    protected String convertValueToFileName(byte[] newPresentationValue) {
-        return Strings.isNullOrEmpty(getFileName())
-                ? String.format(DEFAULT_FILENAME + " (%s)", FileUtils.byteCountToDisplaySize(newPresentationValue.length))
-                : getFileName();
+    protected String convertValueToFileName(byte[] value) {
+        return String.format(DEFAULT_FILENAME + " (%s)", FileUtils.byteCountToDisplaySize(value.length));
     }
 
     protected void onSucceededEvent(SucceededEvent event) {
-        // todo rp
-//        if (!event.isFromClient()) {
-//            return;
-//        }
-
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
         if (receiver instanceof MemoryBuffer) {
@@ -108,7 +105,7 @@ public class JmixUploadField extends AbstractSingleUploadField<byte[]> {
                 IOUtils.closeQuietly(inputStream);
             }
 
-            setInternalValue(value, uploadedFileName, true);
+            setInternalValue(value, true);
             return;
         }
 

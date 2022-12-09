@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  */
 @Tag("jmix-upload-field")
 @JsModule("./src/uploadfield/jmix-upload-field.js")
-public abstract class AbstractSingleUploadField<V> extends AbstractField<AbstractSingleUploadField<V>, V>
+public abstract class AbstractSingleFileUploadField<V> extends AbstractField<AbstractSingleFileUploadField<V>, V>
         implements HasLabel, HasHelper, HasSize, HasStyle {
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
@@ -52,7 +52,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
 
     protected V internalValue;
 
-    public AbstractSingleUploadField(V defaultValue) {
+    public AbstractSingleFileUploadField(V defaultValue) {
         super(defaultValue);
 
         content = createContentComponent();
@@ -86,7 +86,7 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         addClassNames(fileNameComponent, FILE_NAME_COMPONENT_CLASS_NAME, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
 
         if (fileNameComponent instanceof HasText) {
-            String fileName = Strings.nullToEmpty(generateFileName(null, null));
+            String fileName = Strings.nullToEmpty(generateFileName());
             ((HasText) fileNameComponent).setText(fileName);
         }
 
@@ -229,11 +229,11 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleUploadField<V>, V>> listener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V>> listener) {
         @SuppressWarnings("rawtypes")
         ComponentEventListener componentListener = event -> {
-            ComponentValueChangeEvent<AbstractSingleUploadField<V>, V> valueChangeEvent =
-                    (ComponentValueChangeEvent<AbstractSingleUploadField<V>, V>) event;
+            ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V> valueChangeEvent =
+                    (ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V>) event;
             listener.valueChanged(valueChangeEvent);
         };
 
@@ -241,10 +241,10 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     }
 
     protected void setInternalValue(@Nullable V value) {
-        setInternalValue(value, null, false);
+        setInternalValue(value, false);
     }
 
-    protected void setInternalValue(@Nullable V value, @Nullable String uploadedFileName, boolean fromClient) {
+    protected void setInternalValue(@Nullable V value, boolean fromClient) {
         if (valueEquals(internalValue, value)) {
             return;
         }
@@ -253,48 +253,33 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
         internalValue = value;
 
         // update presentation
-        setPresentationValue(value, uploadedFileName);
+        setPresentationValue(value);
 
-        ComponentValueChangeEvent<AbstractSingleUploadField<V>, V> event =
+        ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V> event =
                 new ComponentValueChangeEvent<>(this, this, oldValue, fromClient);
         fireEvent(event);
     }
 
     @Override
-    protected void setPresentationValue(V newPresentationValue) {
-        // do nothing
-    }
-
-    protected void setPresentationValue(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
+    protected void setPresentationValue(@Nullable V newPresentationValue) {
         getContent().remove(fileNameComponent, clearComponent);
         removeClassNames(fileNameComponent, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
 
-        String fileName = generateFileName(newPresentationValue, uploadedFileName);
-        if (fileNameComponent instanceof HasText) {
-            ((HasText) fileNameComponent).setText(Strings.nullToEmpty(fileName));
-        }
+        String uploadedFileName = generateFileName();
+
+        setComponentText(fileNameComponent, uploadedFileName);
 
         getContent().add(fileNameComponent);
+        setComponentEnabled(fileNameComponent, newPresentationValue != null);
 
         if (newPresentationValue == null) {
             addClassNames(fileNameComponent, FILE_NAME_COMPONENT_EMPTY_CLASS_NAME);
         } else {
             getContent().add(clearComponent);
         }
-
-        setComponentEnabled(fileNameComponent, newPresentationValue != null);
     }
 
-    @Nullable
-    protected String generateFileName(@Nullable V newPresentationValue, @Nullable String uploadedFileName) {
-        if (newPresentationValue == null) {
-            return FILE_NOT_SELECTED;
-        }
-        if (!Strings.isNullOrEmpty(uploadedFileName)) {
-            return uploadedFileName;
-        }
-        return null;
-    }
+    protected abstract String generateFileName();
 
     protected void addClassNames(HasElement component, String... classNames) {
         if (component instanceof HasStyle) {
@@ -311,6 +296,12 @@ public abstract class AbstractSingleUploadField<V> extends AbstractField<Abstrac
     protected void setComponentEnabled(Component component, boolean enabled) {
         if (component instanceof HasEnabled) {
             ((HasEnabled) component).setEnabled(enabled);
+        }
+    }
+
+    protected void setComponentText(Component component, String text) {
+        if (component instanceof HasText) {
+            ((HasText) component).setText(Strings.nullToEmpty(text));
         }
     }
 

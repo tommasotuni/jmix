@@ -16,13 +16,14 @@
 
 package io.jmix.flowui.xml.layout.loader.component;
 
-import io.jmix.flowui.component.upload.UploadField;
+import io.jmix.flowui.component.upload.FileStorageUploadField;
+import io.jmix.flowui.kit.component.upload.FileStoragePutMode;
 
-public class UploadFieldLoader extends AbstractUploadFieldLoader<UploadField> {
+public class FileStorageUploadFieldLoader extends AbstractUploadFieldLoader<FileStorageUploadField> {
 
     @Override
-    protected UploadField createComponent() {
-        return factory.create(UploadField.class);
+    protected FileStorageUploadField createComponent() {
+        return factory.create(FileStorageUploadField.class);
     }
 
     @Override
@@ -32,6 +33,9 @@ public class UploadFieldLoader extends AbstractUploadFieldLoader<UploadField> {
         componentLoader().loadRequired(resultComponent, element, context);
         componentLoader().loadValidationAttributes(resultComponent, element, context);
 
-        getLoaderSupport().loadString(element, "fileName", resultComponent::setFileName);
+        getLoaderSupport().loadString(element, "fileStorageName", resultComponent::setFileStorageName);
+        getLoaderSupport().loadEnum(element, FileStoragePutMode.class, "fileStoragePutMode",
+                resultComponent::setFileStoragePutMode);
+
     }
 }

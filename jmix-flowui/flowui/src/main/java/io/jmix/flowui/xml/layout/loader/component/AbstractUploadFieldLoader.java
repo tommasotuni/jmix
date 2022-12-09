@@ -17,11 +17,12 @@
 package io.jmix.flowui.xml.layout.loader.component;
 
 import io.jmix.flowui.data.SupportsValueSource;
-import io.jmix.flowui.kit.component.upload.AbstractSingleUploadField;
+import io.jmix.flowui.kit.component.upload.AbstractSingleFileUploadField;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import io.jmix.flowui.xml.layout.support.DataLoaderSupport;
 
-public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
+// todo rp SupportsValueSource in generic ?
+public abstract class AbstractUploadFieldLoader<C extends AbstractSingleFileUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
 
     protected DataLoaderSupport dataLoaderSupport;
 
@@ -39,6 +40,7 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadFi
 
         getLoaderSupport().loadInteger(element, "maxFileSize", resultComponent::setMaxFileSize);
 
+        // todo rp i18n?
         getLoaderSupport().loadResourceString(element, "uploadButtonText",
                 getContext().getMessageGroup(), resultComponent::setUploadButtonText);
         getLoaderSupport().loadStringVarargs(element, "acceptedFileTypes",

@@ -16,9 +16,9 @@
 
 package io.jmix.flowui.component.upload;
 
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Messages;
@@ -31,6 +31,7 @@ import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.JmixUploadField;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -38,6 +39,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
 
+// todo rp move interfaces to abstract class ?
 public class UploadField extends JmixUploadField implements SupportsValueSource<byte[]>, SupportsValidation<byte[]>,
         HasRequired, ApplicationContextAware, InitializingBean {
 
@@ -68,19 +70,13 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
 
         // Takes the file name from Messages
         if (fileNameComponent instanceof HasText) {
-            ((HasText) fileNameComponent).setText(generateFileName(null, null));
+            ((HasText) fileNameComponent).setText(generateFileName());
         }
-
-        attachSucceededListener(this::onSucceededEvent);
-    }
-
-    @Override
-    protected void initFileNameComponent(Component fileNameComponent) {
-        super.initFileNameComponent(fileNameComponent);
-
         if (fileNameComponent instanceof ClickNotifier) {
             ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
         }
+
+        attachSucceededListener(this::onSucceededEvent);
     }
 
     protected FieldDelegate<UploadField, byte[], byte[]> createFieldDelegate() {
@@ -135,17 +131,30 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
         }
 
         byte[] value = getValue();
-        if (value != null) {
-            downloader.download(value, generateFileName(value, uploadedFileName));
+        if (value == null) {
+            return;
         }
+
+        String fileName = generateFileName();
+        if (Strings.isNullOrEmpty(fileName)) {
+            fileName = convertValueToFileName(value);
+        }
+
+        downloader.download(value, fileName);
     }
 
     @Override
-    protected String generateFileName(@Nullable byte[] newPresentationValue, @Nullable String uploadedFileName) {
+    protected String generateFileName() {
         // Invoked from constructor, messages can be null
-        if (messages != null && newPresentationValue == null) {
+        if (messages != null && getValue() == null) {
             return messages.getMessage("uploadField.fileNotSelected");
         }
-        return super.generateFileName(newPresentationValue, uploadedFileName);
+        return super.generateFileName();
+    }
+
+    @Override
+    protected String convertValueToFileName(byte[] value) {
+        return messages.formatMessage("", "uploadField.noFileName",
+                FileUtils.byteCountToDisplaySize(value.length));
     }
 }

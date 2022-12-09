@@ -2795,17 +2795,21 @@
     <xs:complexType name="fileStorageUploadFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseUploadFieldComponent">
-                <!--todo rp -->
+                <xs:attribute name="fileStoragePutMode" type="fileStoragePutMode"/>
+                <xs:attribute name="fileStorageName" type="xs:string"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
 
     <xs:complexType name="baseUploadFieldComponent">
         <xs:complexContent>
-            <!--todo rp colspan in baseComponent?-->
             <xs:extension base="baseFieldComponent">
 
+                <!--todo rp showFileName ? -->
+                <!--todo rp showClearButton ? -->
                 <xs:attribute name="uploadButtonText" type="resourceString"/>
+                <xs:attribute name="uploadButtonTitle" type="resourceString"/>
+                <xs:attribute name="uploadButtonIcon" type="resourceString"/>
 
                 <xs:attribute name="maxFileSize" type="xs:int"/>
                 <xs:attribute name="acceptedFileTypes" type="xs:string"/>
@@ -2814,6 +2818,13 @@
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
+
+    <xs:simpleType name="fileStoragePutMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MANUAL"/>
+            <xs:enumeration value="IMMEDIATE"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <!--    HTML-->
     <!-- Anchor-->
@@ -3054,6 +3065,7 @@
                 <xs:element name="loginOverlay" type="loginOverlayComponent"/>
                 <xs:element name="simplePagination" type="simplePaginationComponent"/>
                 <xs:element name="uploadField" type="uploadFieldComponent"/>
+                <xs:element name="fileStorageUploadField" type="fileStorageUploadFieldComponent"/>
             </xs:choice>
         </xs:sequence>
     </xs:group>
