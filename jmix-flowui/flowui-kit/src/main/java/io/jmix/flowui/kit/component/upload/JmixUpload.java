@@ -19,10 +19,20 @@ package io.jmix.flowui.kit.component.upload;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.UploadI18N;
+import com.vaadin.flow.internal.JsonSerializer;
 
 @Tag("jmix-upload")
 @JsModule("./src/upload/jmix-upload.js")
 public class JmixUpload extends Upload {
+
+    protected JmixUploadI18N i18n = new JmixUploadI18N();
+
+    protected static final String JMIX_UPLOAD_CLASS_NAME = "jmix-upload";
+
+    public JmixUpload() {
+        addClassName(JMIX_UPLOAD_CLASS_NAME);
+    }
 
     public void setReadOnly(boolean readOnly) {
         getElement().setProperty("readOnly", readOnly);
@@ -38,5 +48,18 @@ public class JmixUpload extends Upload {
 
     public boolean isEnabled() {
         return getElement().getProperty("enabled", false);
+    }
+
+    @Override
+    public void setI18n(UploadI18N i18n) {
+        super.setI18n(i18n);
+
+        if (i18n instanceof JmixUploadI18N) {
+            ((JmixUploadI18N) i18n).copyNotNullPropertiesTo(this.i18n);
+        }
+
+        if (this.i18n.getUploadDialog() != null) {
+            getElement().setPropertyJson("jmixI18n", JsonSerializer.toJson(this.i18n));
+        }
     }
 }

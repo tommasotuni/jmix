@@ -16,7 +16,9 @@
 
 package io.jmix.flowui.kit.component.upload;
 
-public class JmixFileStorageUploadField<V> extends AbstractSingleFileUploadField<V> {
+import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
+
+public class JmixFileStorageUploadField<V> extends AbstractSingleFileUploadField<JmixFileStorageUploadField<V>, V> {
 
     protected FileStoragePutMode fileStoragePutMode = FileStoragePutMode.IMMEDIATE;
     protected String fileStorageName;

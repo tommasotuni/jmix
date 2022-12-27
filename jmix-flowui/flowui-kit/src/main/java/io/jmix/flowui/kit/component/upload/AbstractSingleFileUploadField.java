@@ -16,6 +16,7 @@
 
 package io.jmix.flowui.kit.component.upload;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
@@ -23,26 +24,28 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.upload.*;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.shared.Registration;
+import io.jmix.flowui.kit.component.upload.event.*;
 
 import javax.annotation.Nullable;
 
 /**
+ * @param <C> type of upload field
  * @param <V> value type
  */
 @Tag("jmix-upload-field")
 @JsModule("./src/uploadfield/jmix-upload-field.js")
-public abstract class AbstractSingleFileUploadField<V> extends AbstractField<AbstractSingleFileUploadField<V>, V>
+public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFileUploadField<C, V>, V>
+        extends AbstractField<AbstractSingleFileUploadField<C, V>, V>
         implements HasLabel, HasHelper, HasSize, HasStyle {
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
     protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
     protected static final String FILE_NAME_COMPONENT_EMPTY_CLASS_NAME = "empty";
     protected static final String CLEAR_COMPONENT_CLASS_NAME = "jmix-upload-field-clear";
-
-    protected static final String FILE_NOT_SELECTED = "File is not selected";
 
     protected JmixUpload upload;
     protected HasComponents content;
@@ -68,6 +71,7 @@ public abstract class AbstractSingleFileUploadField<V> extends AbstractField<Abs
         initClearComponent(clearComponent);
 
         attachContent(content);
+        attachUploadEvents(upload);
     }
 
     protected JmixUpload createUploadComponent() {
@@ -127,6 +131,27 @@ public abstract class AbstractSingleFileUploadField<V> extends AbstractField<Abs
     protected void initUploadComponent(JmixUpload upload) {
         upload.setDropAllowed(false);
         upload.setReceiver(createUploadReceiver());
+
+        Component uploadButtonComponent = createUploadButtonComponent();
+        initUploadButtonComponent(uploadButtonComponent);
+        upload.setUploadButton(uploadButtonComponent);
+    }
+
+    protected Component createUploadButtonComponent() {
+        return new Button();
+    }
+
+    protected void initUploadButtonComponent(Component component) {
+        setComponentText(component, JmixUploadI18N.UPLOAD);
+    }
+
+    protected void attachUploadEvents(JmixUpload upload) {
+        upload.addStartedListener(this::onStartedEvent);
+        upload.addProgressListener(this::onProgressEvent);
+        upload.addFinishedListener(this::onFinishedEvent);
+        upload.addFailedListener(this::onFailedEvent);
+        upload.addFileRejectedListener(this::onFileRejectedEvent);
+        upload.addSucceededListener(this::onSucceededEvent);
     }
 
     protected void initContentComponent(HasComponents component) {
@@ -139,10 +164,6 @@ public abstract class AbstractSingleFileUploadField<V> extends AbstractField<Abs
 
     protected <T extends HasComponents> T getContent() {
         return (T) content;
-    }
-
-    protected void attachSucceededListener(ComponentEventListener<SucceededEvent> listener) {
-        upload.addSucceededListener(listener);
     }
 
     protected Receiver createUploadReceiver() {
@@ -180,60 +201,168 @@ public abstract class AbstractSingleFileUploadField<V> extends AbstractField<Abs
     }
 
     /**
-     * Add a progress listener that is informed on upload progress.
+     * Adds file upload progress listener that is informed on upload progress.
      *
      * @param listener progress listener to add
      * @return registration for removal of listener
      */
-    public Registration addProgressListener(ComponentEventListener<ProgressUpdateEvent> listener) {
-        return upload.addProgressListener(listener);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadProgressListener(ComponentEventListener<FileUploadProgressEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadProgressEvent.class, (ComponentEventListener) listener);
     }
 
-    // todo rp javaDocs
-    public Registration addFailedListener(ComponentEventListener<FailedEvent> listener) {
-        return upload.addFailedListener(listener);
+    protected void onProgressEvent(ProgressUpdateEvent event) {
+        getEventBus().fireEvent(new FileUploadProgressEvent<>(this, event.getReadBytes(),
+                event.getContentLength()));
     }
 
-    public Registration addFinishedListener(ComponentEventListener<FinishedEvent> listener) {
-        return upload.addFinishedListener(listener);
+    /**
+     * Adds a succeeded listener that is informed on upload finished.
+     *
+     * @param listener listener to add
+     * @return registration for removal of listener
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadFinishedListener(ComponentEventListener<FileUploadFinishedEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadFinishedEvent.class, (ComponentEventListener) listener);
+    }
+
+    protected void onFinishedEvent(FinishedEvent event) {
+        getEventBus().fireEvent(new FileUploadFinishedEvent<>(this, event.getFileName(), event.getMIMEType(),
+                event.getContentLength()));
+    }
+
+    /**
+     * Add a listener that is informed on upload failure.
+     *
+     * @param listener listener to add
+     * @return registration for removal of listener
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadFailedListener(ComponentEventListener<FileUploadFailedEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadFailedEvent.class, (ComponentEventListener) listener);
+    }
+
+    protected void onFailedEvent(FailedEvent event) {
+        getEventBus().fireEvent(new FileUploadFailedEvent<>(this, event.getFileName(), event.getMIMEType(),
+                event.getContentLength(), event.getReason()));
     }
 
     /**
      * Add a succeeded listener that is informed on upload start.
      *
-     * @param listener registration for removal of listener
+     * @param listener listener to add
      * @return registration for removal of listener
      */
-    public Registration addStartedListener(ComponentEventListener<StartedEvent> listener) {
-        return upload.addStartedListener(listener);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadStartedListener(ComponentEventListener<FileUploadStartedEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadStartedEvent.class, (ComponentEventListener) listener);
     }
 
-    public Registration addSucceededListener(ComponentEventListener<SucceededEvent> listener) {
-        return upload.addSucceededListener(listener);
+    protected void onStartedEvent(StartedEvent event) {
+        getEventBus().fireEvent(new FileUploadStartedEvent<>(this, event.getFileName(), event.getMIMEType(),
+                event.getContentLength()));
     }
 
-    public Registration addFileRejectedListener(ComponentEventListener<FileRejectedEvent> listener) {
-        return upload.addFileRejectedListener(listener);
+    /**
+     * Adds a listener for file-reject events fired when a file cannot be added due to some constrains:
+     * <ul>
+     *     <li>{@link #setMaxFileSize(int)}</li>
+     *     <li>{@link #setAcceptedFileTypes(String...)}</li>
+     * </ul>
+     *
+     * @param listener listener to add
+     * @return registration for removal of listener
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadFileRejectedListener(ComponentEventListener<FileUploadFileRejectedEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadFileRejectedEvent.class, (ComponentEventListener) listener);
     }
 
+    protected void onFileRejectedEvent(FileRejectedEvent event) {
+        getEventBus().fireEvent(new FileUploadFileRejectedEvent<>(this, event.getErrorMessage()));
+    }
+
+    /**
+     * Add a succeeded listener that is informed on upload succeeded.
+     *
+     * @param listener listener to add
+     * @return registration for removal of listener
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Registration addFileUploadSucceededListener(ComponentEventListener<FileUploadSucceededEvent<C>> listener) {
+        return getEventBus().addListener(FileUploadSucceededEvent.class, (ComponentEventListener) listener);
+    }
+
+    protected void onSucceededEvent(SucceededEvent event) {
+        getEventBus().fireEvent(new FileUploadSucceededEvent<>(this, event.getFileName(), event.getMIMEType(),
+                event.getContentLength()));
+    }
+
+    /**
+     * Specify the maximum file size in bytes allowed to upload. Notice that it is a client-side constraint,
+     * which will be checked before sending the request.
+     *
+     * @param maxFileSize the maximum file size in bytes
+     * @see Upload#setMaxFileSize(int)
+     */
     public void setMaxFileSize(int maxFileSize) {
         upload.setMaxFileSize(maxFileSize);
     }
 
+    /**
+     * Specify the types of files that the server accepts. Syntax: a MIME type pattern (wildcards are allowed)
+     * or file extensions. Notice that MIME types are widely supported, while file extensions are only implemented
+     * in certain browsers, so it should be avoided.
+     * <p>
+     * Example: "video/*","image/tiff" or ".pdf","audio/mp3"
+     *
+     * @param acceptedFileTypes the allowed file types to be uploaded, or {@code null} to clear any restrictions
+     * @see Upload#setAcceptedFileTypes(String...)
+     */
     public void setAcceptedFileTypes(String... acceptedFileTypes) {
         upload.setAcceptedFileTypes(acceptedFileTypes);
     }
 
-    public void setUploadButtonText(String text) {
+    /**
+     * @return internationalization properties or {@code null} if not set
+     */
+    @Nullable
+    public JmixUploadI18N getI18n() {
+        return (JmixUploadI18N) upload.getI18n();
+    }
+
+    /**
+     * Sets the internationalization properties.
+     *
+     * @param i18n properties to set
+     */
+    public void setI18n(JmixUploadI18N i18n) {
+        Preconditions.checkNotNull(i18n);
+
+        upload.setI18n(i18n);
+
+        applyI18n(i18n);
+    }
+
+    protected void applyI18n(JmixUploadI18N i18n) {
+        upload.setI18n(i18n);
+
+        if (i18n.getUploadText() != null) {
+            setComponentText(upload.getUploadButton(), i18n.getUploadText());
+        }
+    }
+
+    public void setUploadIcon(Icon icon) {
         // todo rp?
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V>> listener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V>> listener) {
         @SuppressWarnings("rawtypes")
         ComponentEventListener componentListener = event -> {
-            ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V> valueChangeEvent =
-                    (ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V>) event;
+            ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V> valueChangeEvent =
+                    (ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V>) event;
             listener.valueChanged(valueChangeEvent);
         };
 
@@ -255,7 +384,7 @@ public abstract class AbstractSingleFileUploadField<V> extends AbstractField<Abs
         // update presentation
         setPresentationValue(value);
 
-        ComponentValueChangeEvent<AbstractSingleFileUploadField<V>, V> event =
+        ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V> event =
                 new ComponentValueChangeEvent<>(this, this, oldValue, fromClient);
         fireEvent(event);
     }

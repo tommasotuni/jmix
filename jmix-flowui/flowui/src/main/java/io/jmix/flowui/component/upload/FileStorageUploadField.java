@@ -16,8 +16,10 @@
 
 package io.jmix.flowui.component.upload;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ClickNotifier;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
@@ -37,6 +39,7 @@ import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.FileStoragePutMode;
 import io.jmix.flowui.kit.component.upload.JmixFileStorageUploadField;
+import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import io.jmix.flowui.upload.TemporaryStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -46,6 +49,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+
+import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
 
 public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
         implements SupportsValueSource<FileRef>, SupportsValidation<FileRef>, HasRequired, ApplicationContextAware,
@@ -87,7 +92,10 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
             ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
         }
 
-        attachSucceededListener(this::onSucceedEvent);
+        applyI18nDefaults();
+
+        attachSucceededListener(this::onUploadSucceededEvent);
+        attachValueChangeListener(this::onValueChange);
     }
 
     protected FieldDelegate<FileStorageUploadField, FileRef, FileRef> createFieldDelegate() {
@@ -136,7 +144,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
         fieldDelegate.setValueSource(valueSource);
     }
 
-    protected void onSucceedEvent(SucceededEvent event) {
+    protected void onUploadSucceededEvent(SucceededEvent event) {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
 
@@ -144,7 +152,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
             TemporaryStorageReceiver storageReceiver = (TemporaryStorageReceiver) receiver;
 
             if (getFileStoragePutMode() == FileStoragePutMode.IMMEDIATE) {
-                checkFilStorageInitialized();
+                checkFileStorageInitialized();
 
                 FileRef fileRef = temporaryStorage.putFileIntoStorage(
                         storageReceiver.getFileInfo().getId(),
@@ -175,7 +183,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
         return getValue().getFileName();
     }
 
-    protected void checkFilStorageInitialized() {
+    protected void checkFileStorageInitialized() {
         if (fileStorage == null) {
             if (StringUtils.isNotEmpty(fileStorageName)) {
                 fileStorage = fileStorageLocator.getByName(fileStorageName);
@@ -199,5 +207,30 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
     @Override
     protected boolean valueEquals(FileRef value1, FileRef value2) {
         return Objects.equals(value1, value2);
+    }
+
+    protected void attachSucceededListener(ComponentEventListener<SucceededEvent> listener) {
+        upload.addSucceededListener(listener);
+    }
+
+    protected void attachValueChangeListener(
+            ValueChangeListener<ComponentValueChangeEvent<FileStorageUploadField, FileRef>> listener) {
+        addValueChangeListener((ValueChangeListener) listener);
+    }
+
+    protected void onValueChange(ComponentValueChangeEvent<FileStorageUploadField, FileRef> event) {
+        isInvalid();
+    }
+
+    protected void applyI18nDefaults() {
+        JmixUploadI18N i18nDefaults = applicationContext.getBean(UploadFieldI18NSupport.class)
+                .getI18nFileStorageUploadField();
+        applyI18n(i18nDefaults);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        isInvalid();
     }
 }

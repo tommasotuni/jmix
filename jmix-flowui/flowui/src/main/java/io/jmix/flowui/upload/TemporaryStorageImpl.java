@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static io.jmix.core.common.util.Preconditions.checkNotNullArgument;
 
 @Internal
-@Component("ui_TemporaryStorage")
+@Component("flowui_TemporaryStorage")
 public class TemporaryStorageImpl implements TemporaryStorage {
 
     private final Logger log = LoggerFactory.getLogger(TemporaryStorageImpl.class);

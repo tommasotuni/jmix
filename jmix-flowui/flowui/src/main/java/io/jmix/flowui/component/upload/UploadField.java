@@ -17,9 +17,8 @@
 package io.jmix.flowui.component.upload;
 
 import com.google.common.base.Strings;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ClickNotifier;
-import com.vaadin.flow.component.HasText;
+import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Messages;
 import io.jmix.flowui.component.HasRequired;
@@ -31,6 +30,7 @@ import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.JmixUploadField;
+import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,7 +76,10 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
             ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
         }
 
-        attachSucceededListener(this::onSucceededEvent);
+        applyI18nDefaults();
+
+        attachSucceededListener(this::onUploadSucceededEvent);
+        attachValueChangeListener(this::onValueChange);
     }
 
     protected FieldDelegate<UploadField, byte[], byte[]> createFieldDelegate() {
@@ -156,5 +159,29 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
     protected String convertValueToFileName(byte[] value) {
         return messages.formatMessage("", "uploadField.noFileName",
                 FileUtils.byteCountToDisplaySize(value.length));
+    }
+
+    protected void attachSucceededListener(ComponentEventListener<SucceededEvent> listener) {
+        upload.addSucceededListener(listener);
+    }
+
+    protected void attachValueChangeListener(
+            ValueChangeListener<ComponentValueChangeEvent<UploadField, byte[]>> listener) {
+        addValueChangeListener((ValueChangeListener) listener);
+    }
+
+    protected void onValueChange(ComponentValueChangeEvent<UploadField, byte[]> event) {
+        isInvalid();
+    }
+
+    protected void applyI18nDefaults() {
+        JmixUploadI18N i18nDefaults = applicationContext.getBean(UploadFieldI18NSupport.class).getI18nUploadField();
+        applyI18n(i18nDefaults);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        isInvalid();
     }
 }

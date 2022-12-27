@@ -41,10 +41,11 @@ class JmixUpload extends Upload {
                     return {
                         uploadDialog: {
                             title: "Uploading",
-                            cancelButtonLabel: "Cancel",
+                            cancel: "Cancel",
                         },
                     }
-                }
+                },
+                notify: true,
             }
         };
     }
@@ -68,6 +69,7 @@ class JmixUpload extends Upload {
     static get observers() {
         return [
             '_onEnabledPropertyChanged(enabled)',
+            '_onJmixI18nChanged(jmixI18n)',
         ]
     }
 
@@ -149,7 +151,7 @@ class JmixUpload extends Upload {
 
                 // 'vaadin-upload-file' automatically updates bounded elements,
                 // but using manually approach, it works only after value is unset.
-                // Therefore firstly unset the file, then set new one.
+                // Therefore, firstly unset the file, then set new one.
                 uploadFile.file = {};
                 uploadFile.file = uploadContext.file;
             } else {
@@ -172,7 +174,7 @@ class JmixUpload extends Upload {
     _createUploadDialogCancelButton() {
         const cancelBtn = document.createElement("vaadin-button");
         cancelBtn.className = "jmix-upload-dialog-cancel-button";
-        cancelBtn.innerText = this.jmixI18n.uploadDialog.cancelButtonLabel;
+        cancelBtn.innerText = this.jmixI18n.uploadDialog.cancel;
         cancelBtn.addEventListener("click", this._onUploadDialogCancelButtonClick.bind(this));
         return cancelBtn;
     }
@@ -190,6 +192,13 @@ class JmixUpload extends Upload {
             } else {
                 uploadComponent.setAttribute("disabled", "");
             }
+        }
+    }
+
+    _onJmixI18nChanged(jmixI18n) {
+        const dialog = this._getUploadDialog();
+        if (dialog) {
+            dialog.headerTitle = jmixI18n.uploadDialog.title;
         }
     }
 

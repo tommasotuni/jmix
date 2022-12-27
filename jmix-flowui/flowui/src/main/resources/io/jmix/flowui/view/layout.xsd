@@ -2804,12 +2804,16 @@
     <xs:complexType name="baseUploadFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
-
-                <!--todo rp showFileName ? -->
-                <!--todo rp showClearButton ? -->
-                <xs:attribute name="uploadButtonText" type="resourceString"/>
-                <xs:attribute name="uploadButtonTitle" type="resourceString"/>
-                <xs:attribute name="uploadButtonIcon" type="resourceString"/>
+                <xs:attribute name="uploadText" type="resourceString"/>
+                <xs:attribute name="fileNotSelectedText" type="resourceString"/>
+                <xs:attribute name="fileTooBigText" type="resourceString"/>
+                <xs:attribute name="incorrectFileTypeText" type="resourceString"/>
+                <xs:attribute name="processingStatusText" type="resourceString"/>
+                <xs:attribute name="connectingStatusText" type="resourceString"/>
+                <xs:attribute name="remainingTimeText" type="resourceString"/>
+                <xs:attribute name="remainingTimeUnknownText" type="resourceString"/>
+                <xs:attribute name="uploadDialogTitle" type="resourceString"/>
+                <xs:attribute name="uploadDialogCancelText" type="resourceString"/>
 
                 <xs:attribute name="maxFileSize" type="xs:int"/>
                 <xs:attribute name="acceptedFileTypes" type="xs:string"/>

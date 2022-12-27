@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class JmixUploadField extends AbstractSingleFileUploadField<byte[]> {
+import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
+
+public class JmixUploadField extends AbstractSingleFileUploadField<JmixUploadField, byte[]> {
 
     private static final String DEFAULT_FILENAME = "attachment";
 
@@ -56,7 +58,7 @@ public class JmixUploadField extends AbstractSingleFileUploadField<byte[]> {
      * Sets file name to be shown in the component next to upload button.
      * The file name of the newly uploaded file will rewrite the caption.
      * <p>
-     * The default value is "attachment (file_size Kb)".
+     * The default value is "attachment (file_size Kb)". See also message key "{@code uploadField.noFileName}".
      *
      * @param fileName file name to show
      */
@@ -89,7 +91,7 @@ public class JmixUploadField extends AbstractSingleFileUploadField<byte[]> {
         return String.format(DEFAULT_FILENAME + " (%s)", FileUtils.byteCountToDisplaySize(value.length));
     }
 
-    protected void onSucceededEvent(SucceededEvent event) {
+    protected void onUploadSucceededEvent(SucceededEvent event) {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
         if (receiver instanceof MemoryBuffer) {
@@ -110,6 +112,16 @@ public class JmixUploadField extends AbstractSingleFileUploadField<byte[]> {
         }
 
         throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
+    }
+
+    @Override
+    protected void setInternalValue(@Nullable byte[] value, boolean fromClient) {
+        if (!fromClient) {
+            // clear uploaded file name if file uploaded not by this component
+            uploadedFileName = null;
+        }
+
+        super.setInternalValue(value, fromClient);
     }
 
     protected boolean valueEquals(@Nullable byte[] a, @Nullable byte[] b) {

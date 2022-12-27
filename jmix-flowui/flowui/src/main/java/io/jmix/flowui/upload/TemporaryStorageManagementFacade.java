@@ -21,8 +21,8 @@ import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
 
-@ManagedResource(description = "Manages TemporaryStorage", objectName = "jmix.ui:type=TemporaryStorage")
-@Component("ui_TemporaryStorageManagementFacade")
+@ManagedResource(description = "Manages TemporaryStorage", objectName = "jmix.flowui:type=TemporaryStorage")
+@Component("flowui_TemporaryStorageManagementFacade")
 public class TemporaryStorageManagementFacade {
     @Autowired
     protected TemporaryStorageImpl temporaryStorage;
