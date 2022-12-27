@@ -18,13 +18,14 @@ package io.jmix.flowui.xml.layout.loader.component;
 
 import com.vaadin.flow.component.upload.UploadI18N;
 import io.jmix.flowui.data.SupportsValueSource;
+import io.jmix.flowui.kit.component.FlowuiComponentUtils;
 import io.jmix.flowui.kit.component.upload.AbstractSingleFileUploadField;
 import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import io.jmix.flowui.xml.layout.support.DataLoaderSupport;
 import org.dom4j.Element;
 
-// todo rp SupportsValueSource in generic ?
+@SuppressWarnings("rawtypes")
 public abstract class AbstractUploadFieldLoader<C extends AbstractSingleFileUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
 
     protected DataLoaderSupport dataLoaderSupport;
@@ -45,15 +46,22 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleFileUplo
         getLoaderSupport().loadStringVarargs(element, "acceptedFileTypes",
                 resultComponent::setAcceptedFileTypes);
 
+        getLoaderSupport().loadBoolean(element, "dropAllowed", resultComponent::setDropAllowed);
+
+        getLoaderSupport().loadString(element, "uploadIcon")
+                .map(FlowuiComponentUtils::parseIcon)
+                .ifPresent(resultComponent::setUploadIcon);
+
+        getLoaderSupport().loadResourceString(element, "uploadText", context.getMessageGroup(),
+                resultComponent::setUploadText);
+        getLoaderSupport().loadResourceString(element, "fileNotSelectedText", context.getMessageGroup(),
+                resultComponent::setFileNotSelectedText);
+
         loadI18N(resultComponent, element);
     }
 
     protected void loadI18N(C resultComponent, Element element) {
         JmixUploadI18N jmixUploadI18n = new JmixUploadI18N();
-        getLoaderSupport().loadResourceString(element, "uploadText", context.getMessageGroup(),
-                jmixUploadI18n::setUploadText);
-        getLoaderSupport().loadResourceString(element, "fileNotSelectedText", context.getMessageGroup(),
-                jmixUploadI18n::setFileNotSelectedText);
 
         getLoaderSupport().loadResourceString(element, "fileTooBigText", context.getMessageGroup(),
                 value -> jmixUploadI18n.setError(getOrCreateError(jmixUploadI18n).setFileIsTooBig(value)));

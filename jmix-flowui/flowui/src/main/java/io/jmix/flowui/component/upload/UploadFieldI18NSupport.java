@@ -34,10 +34,10 @@ public class UploadFieldI18NSupport {
     }
 
     /**
-     * @return i18n object that contains default localizations for {@link UploadField}
+     * @return i18n object that contains default localizations for {@link FileUploadField}
      */
     public JmixUploadI18N getI18nUploadField() {
-        return getI18nDefaults("uploadField");
+        return getI18nDefaults("fileUploadField");
     }
 
     /**
@@ -47,9 +47,8 @@ public class UploadFieldI18NSupport {
         return getI18nDefaults("fileStorageUploadField");
     }
 
-     protected JmixUploadI18N getI18nDefaults(String componentName) {
+    protected JmixUploadI18N getI18nDefaults(String componentName) {
         JmixUploadI18N jmixUploadI18N = new JmixUploadI18N();
-        jmixUploadI18N.setUploadText(messages.getMessage(componentName + ".upload.text"));
 
         JmixUploadI18N.UploadDialog uploadDialog = new JmixUploadI18N.UploadDialog();
         uploadDialog.setTitle(messages.getMessage(componentName + ".uploadDialog.title"));

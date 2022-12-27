@@ -16,13 +16,13 @@
 
 package io.jmix.flowui.xml.layout.loader.component;
 
-import io.jmix.flowui.component.upload.UploadField;
+import io.jmix.flowui.component.upload.FileUploadField;
 
-public class UploadFieldLoader extends AbstractUploadFieldLoader<UploadField> {
+public class FileUploadFieldLoader extends AbstractUploadFieldLoader<FileUploadField> {
 
     @Override
-    protected UploadField createComponent() {
-        return factory.create(UploadField.class);
+    protected FileUploadField createComponent() {
+        return factory.create(FileUploadField.class);
     }
 
     @Override

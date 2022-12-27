@@ -55,7 +55,7 @@ public class JmixUpload extends Upload {
         super.setI18n(i18n);
 
         if (i18n instanceof JmixUploadI18N) {
-            ((JmixUploadI18N) i18n).copyNotNullPropertiesTo(this.i18n);
+            ((JmixUploadI18N) i18n).copyUploadDialogPropertiesTo(this.i18n);
         }
 
         if (this.i18n.getUploadDialog() != null) {

@@ -21,7 +21,7 @@ import com.vaadin.flow.component.upload.UploadI18N;
 import javax.annotation.Nullable;
 
 /**
- * POJO class, contains i18n properties for {@link JmixUpload} and {@link JmixFileStorageUploadField}.
+ * Contains i18n properties for {@link JmixUpload} and {@link JmixFileStorageUploadField}.
  */
 public class JmixUploadI18N extends UploadI18N {
 
@@ -29,43 +29,6 @@ public class JmixUploadI18N extends UploadI18N {
     public static final String UPLOAD = "Upload";
 
     protected UploadDialog uploadDialog;
-
-    protected String uploadText;
-    protected String fileNotSelectedText;
-
-    /**
-     * @return text that should be shown in the upload button or {@code null} if not set
-     */
-    @Nullable
-    public String getUploadText() {
-        return uploadText;
-    }
-
-    /**
-     * Sets the text that should be shown in the upload button.
-     *
-     * @param uploadText text to set
-     */
-    public void setUploadText(@Nullable String uploadText) {
-        this.uploadText = uploadText;
-    }
-
-    /**
-     * @return text that is shown when file is not uploaded or {@code null} if not set
-     */
-    @Nullable
-    public String getFileNotSelectedText() {
-        return fileNotSelectedText;
-    }
-
-    /**
-     * Sets text that is shown when file is not uploaded
-     *
-     * @param fileNotSelectedText text to set
-     */
-    public void setFileNotSelectedText(@Nullable String fileNotSelectedText) {
-        this.fileNotSelectedText = fileNotSelectedText;
-    }
 
     /**
      * @return properties for the upload dialog or {@code null} if not set
@@ -84,7 +47,7 @@ public class JmixUploadI18N extends UploadI18N {
         this.uploadDialog = uploadDialog;
     }
 
-    protected void copyNotNullPropertiesTo(JmixUploadI18N target) {
+    protected void copyUploadDialogPropertiesTo(JmixUploadI18N target) {
         if (uploadDialog != null) {
             target.uploadDialog = target.uploadDialog == null ? new UploadDialog() : target.uploadDialog;
             target.uploadDialog.title = uploadDialog.title == null ? target.uploadDialog.title : uploadDialog.title;

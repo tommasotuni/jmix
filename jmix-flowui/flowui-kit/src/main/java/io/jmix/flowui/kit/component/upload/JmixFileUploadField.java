@@ -31,18 +31,19 @@ import java.util.Arrays;
 
 import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
 
-public class JmixUploadField extends AbstractSingleFileUploadField<JmixUploadField, byte[]> {
+public class JmixFileUploadField<C extends AbstractSingleFileUploadField<C, byte[]>>
+        extends AbstractSingleFileUploadField<C, byte[]> {
 
     private static final String DEFAULT_FILENAME = "attachment";
 
     protected String fileName;
     protected String uploadedFileName;
 
-    public JmixUploadField() {
+    public JmixFileUploadField() {
         this(null);
     }
 
-    public JmixUploadField(byte[] defaultValue) {
+    public JmixFileUploadField(byte[] defaultValue) {
         super(defaultValue);
     }
 
@@ -58,7 +59,7 @@ public class JmixUploadField extends AbstractSingleFileUploadField<JmixUploadFie
      * Sets file name to be shown in the component next to upload button.
      * The file name of the newly uploaded file will rewrite the caption.
      * <p>
-     * The default value is "attachment (file_size Kb)". See also message key "{@code uploadField.noFileName}".
+     * The default value is "attachment (file_size Kb)". See also message key "{@code fileUploadField.noFileName}".
      *
      * @param fileName file name to show
      */
@@ -77,7 +78,9 @@ public class JmixUploadField extends AbstractSingleFileUploadField<JmixUploadFie
     @Override
     protected String generateFileName() {
         if (getValue() == null) {
-            return FILE_NOT_SELECTED;
+            return Strings.isNullOrEmpty(getFileNotSelectedText())
+                    ? FILE_NOT_SELECTED
+                    : getFileNotSelectedText();
         }
         if (!Strings.isNullOrEmpty(uploadedFileName)) {
             return uploadedFileName;

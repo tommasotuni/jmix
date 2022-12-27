@@ -29,7 +29,7 @@ import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.data.ValueSource;
 import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
-import io.jmix.flowui.kit.component.upload.JmixUploadField;
+import io.jmix.flowui.kit.component.upload.JmixFileUploadField;
 import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeansException;
@@ -39,15 +39,14 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
 
-// todo rp move interfaces to abstract class ?
-public class UploadField extends JmixUploadField implements SupportsValueSource<byte[]>, SupportsValidation<byte[]>,
-        HasRequired, ApplicationContextAware, InitializingBean {
+public class FileUploadField extends JmixFileUploadField<FileUploadField> implements SupportsValueSource<byte[]>,
+        SupportsValidation<byte[]>, HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
     protected Messages messages;
     protected Downloader downloader;
 
-    protected FieldDelegate<UploadField, byte[], byte[]> fieldDelegate;
+    protected FieldDelegate<FileUploadField, byte[], byte[]> fieldDelegate;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -68,21 +67,20 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
     protected void initComponent() {
         fieldDelegate = createFieldDelegate();
 
-        // Takes the file name from Messages
-        if (fileNameComponent instanceof HasText) {
-            ((HasText) fileNameComponent).setText(generateFileName());
-        }
-        if (fileNameComponent instanceof ClickNotifier) {
-            ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
-        }
+        setComponentText(fileNameComponent, generateFileName());
+        setComponentText(upload.getUploadButton(), messages.getMessage("fileUploadField.upload.text"));
+
+        setComponentClickListener(fileNameComponent, this::onFileNameClick);
 
         applyI18nDefaults();
 
         attachSucceededListener(this::onUploadSucceededEvent);
         attachValueChangeListener(this::onValueChange);
+
+        attachUploadEvents(upload);
     }
 
-    protected FieldDelegate<UploadField, byte[], byte[]> createFieldDelegate() {
+    protected FieldDelegate<FileUploadField, byte[], byte[]> createFieldDelegate() {
         return applicationContext.getBean(FieldDelegate.class, this);
     }
 
@@ -149,15 +147,17 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
     @Override
     protected String generateFileName() {
         // Invoked from constructor, messages can be null
-        if (messages != null && getValue() == null) {
-            return messages.getMessage("uploadField.fileNotSelected");
+        if (messages != null
+                && getValue() == null
+                && Strings.isNullOrEmpty(getFileNotSelectedText())) {
+            return messages.getMessage("fileUploadField.fileNotSelected");
         }
         return super.generateFileName();
     }
 
     @Override
     protected String convertValueToFileName(byte[] value) {
-        return messages.formatMessage("", "uploadField.noFileName",
+        return messages.formatMessage("", "fileUploadField.noFileName",
                 FileUtils.byteCountToDisplaySize(value.length));
     }
 
@@ -166,17 +166,17 @@ public class UploadField extends JmixUploadField implements SupportsValueSource<
     }
 
     protected void attachValueChangeListener(
-            ValueChangeListener<ComponentValueChangeEvent<UploadField, byte[]>> listener) {
-        addValueChangeListener((ValueChangeListener) listener);
+            ValueChangeListener<ComponentValueChangeEvent<FileUploadField, byte[]>> listener) {
+        addValueChangeListener(listener);
     }
 
-    protected void onValueChange(ComponentValueChangeEvent<UploadField, byte[]> event) {
+    protected void onValueChange(ComponentValueChangeEvent<FileUploadField, byte[]> event) {
         isInvalid();
     }
 
     protected void applyI18nDefaults() {
         JmixUploadI18N i18nDefaults = applicationContext.getBean(UploadFieldI18NSupport.class).getI18nUploadField();
-        applyI18n(i18nDefaults);
+        setI18n(i18nDefaults);
     }
 
     @Override

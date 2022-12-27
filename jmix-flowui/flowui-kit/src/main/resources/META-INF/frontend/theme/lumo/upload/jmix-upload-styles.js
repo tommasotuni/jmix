@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-import './jmix-upload-styles.js';
-import '../../../src/upload/jmix-upload.js';
+import { css, registerStyles } from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
+
+const upload = css`
+  :host(:not([nodrop])) {
+    border: 0;
+    overflow: initial;
+    padding: 0;
+    transition: background-color 0.6s, border-color 0.6s;
+  }
+  [part='drop-label'] {
+    display: none;
+  }
+`;
+
+registerStyles('jmix-upload', upload, {
+    moduleId: 'lumo-jmix-upload-styles'
+});

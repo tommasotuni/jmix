@@ -16,9 +16,12 @@
 
 package io.jmix.flowui.kit.component.upload;
 
+import com.google.common.base.Strings;
+
 import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
 
-public class JmixFileStorageUploadField<V> extends AbstractSingleFileUploadField<JmixFileStorageUploadField<V>, V> {
+public class JmixFileStorageUploadField<C extends AbstractSingleFileUploadField<C, V>, V>
+        extends AbstractSingleFileUploadField<C, V> {
 
     protected FileStoragePutMode fileStoragePutMode = FileStoragePutMode.IMMEDIATE;
     protected String fileStorageName;
@@ -50,7 +53,11 @@ public class JmixFileStorageUploadField<V> extends AbstractSingleFileUploadField
 
     @Override
     protected String generateFileName() {
-        // stub
-        return FILE_NOT_SELECTED;
+        if (getValue() == null) {
+            return Strings.isNullOrEmpty(getFileNotSelectedText())
+                    ? FILE_NOT_SELECTED
+                    : getFileNotSelectedText();
+        }
+        return getValue().toString();
     }
 }

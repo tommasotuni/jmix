@@ -16,9 +16,9 @@
 
 package io.jmix.flowui.component.upload;
 
+import com.google.common.base.Strings;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ClickNotifier;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.SucceededEvent;
@@ -40,6 +40,7 @@ import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.FileStoragePutMode;
 import io.jmix.flowui.kit.component.upload.JmixFileStorageUploadField;
 import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
+import io.jmix.flowui.kit.component.upload.event.FileUploadSucceededEvent;
 import io.jmix.flowui.upload.TemporaryStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -50,9 +51,7 @@ import org.springframework.context.ApplicationContextAware;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
-
-public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
+public class FileStorageUploadField extends JmixFileStorageUploadField<FileStorageUploadField, FileRef>
         implements SupportsValueSource<FileRef>, SupportsValidation<FileRef>, HasRequired, ApplicationContextAware,
         InitializingBean {
 
@@ -81,6 +80,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
         temporaryStorage = applicationContext.getBean(TemporaryStorage.class);
         fileStorageLocator = applicationContext.getBean(FileStorageLocator.class);
         downloader = applicationContext.getBean(Downloader.class);
+        messages = applicationContext.getBean(Messages.class);
     }
 
     protected void initComponent() {
@@ -88,14 +88,17 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
 
         upload.setReceiver(applicationContext.getBean(TemporaryStorageReceiver.class));
 
-        if (fileNameComponent instanceof ClickNotifier) {
-            ((ClickNotifier<?>) fileNameComponent).addClickListener(this::onFileNameClick);
-        }
+        setComponentText(fileNameComponent, generateFileName());
+        setComponentText(upload.getUploadButton(), messages.getMessage("fileStorageUploadField.upload.text"));
+
+        setComponentClickListener(fileNameComponent, this::onFileNameClick);
 
         applyI18nDefaults();
 
         attachSucceededListener(this::onUploadSucceededEvent);
         attachValueChangeListener(this::onValueChange);
+
+        attachUploadEvents(upload);
     }
 
     protected FieldDelegate<FileStorageUploadField, FileRef, FileRef> createFieldDelegate() {
@@ -144,6 +147,38 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
         fieldDelegate.setValueSource(valueSource);
     }
 
+    /**
+     * Add a succeeded listener that is informed on upload succeeded.
+     * <p>
+     * For instance, if component has {@link FileStoragePutMode#MANUAL},
+     * we can handle the uploading, like the following:
+     * <pre>
+     *     manuallyControlledField.addFileUploadSucceededListener(event -&gt; {
+     *          TemporaryStorageReceiver receiver = event.getReceiver();
+     *          File file = temporaryStorage.getFile(receiver.getFileInfo().getId());
+     *          if (file != null) {
+     *              notifications.create("File is uploaded to temporary storage at " + file.getAbsolutePath())
+     *                      .show();
+     *          }
+     *
+     *          FileRef fileRef = temporaryStorage.putFileIntoStorage(receiver.getFileInfo().getId(), event.getFileName());
+     *          manuallyControlledField.setValue(fileRef);
+     *
+     *          notifications.create("Uploaded file: " + event.getFileName())
+     *                  .show();
+     *      });
+     * </pre>
+     *
+     * @param listener listener to add
+     * @return registration for removal of listener
+     * @see TemporaryStorageReceiver
+     */
+    @Override
+    public Registration addFileUploadSucceededListener(
+            ComponentEventListener<FileUploadSucceededEvent<FileStorageUploadField>> listener) {
+        return super.addFileUploadSucceededListener(listener);
+    }
+
     protected void onUploadSucceededEvent(SucceededEvent event) {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
@@ -161,6 +196,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
 
                 setInternalValue(fileRef, true);
             } else {
+                // todo rp do we need this like in classic UI ?
                 internalValue = null;
                 setPresentationValue(null);
                 // update file name explicitly
@@ -176,9 +212,9 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
     protected String generateFileName() {
         if (getValue() == null) {
             // Invoked from constructor, messages can be null
-            return messages != null
+            return messages != null && Strings.isNullOrEmpty(getFileNotSelectedText())
                     ? messages.getMessage("fileStorageUploadField.fileNotSelected")
-                    : FILE_NOT_SELECTED;
+                    : super.generateFileName();
         }
         return getValue().getFileName();
     }
@@ -215,7 +251,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
 
     protected void attachValueChangeListener(
             ValueChangeListener<ComponentValueChangeEvent<FileStorageUploadField, FileRef>> listener) {
-        addValueChangeListener((ValueChangeListener) listener);
+        addValueChangeListener(listener);
     }
 
     protected void onValueChange(ComponentValueChangeEvent<FileStorageUploadField, FileRef> event) {
@@ -225,7 +261,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileRef>
     protected void applyI18nDefaults() {
         JmixUploadI18N i18nDefaults = applicationContext.getBean(UploadFieldI18NSupport.class)
                 .getI18nFileStorageUploadField();
-        applyI18n(i18nDefaults);
+        setI18n(i18nDefaults);
     }
 
     @Override

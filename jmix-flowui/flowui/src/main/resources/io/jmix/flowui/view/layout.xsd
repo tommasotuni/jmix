@@ -2780,9 +2780,9 @@
         <xs:attribute name="description" type="resourceString"/>
     </xs:complexType>
 
-    <!-- UploadField -->
+    <!-- FileUploadField -->
 
-    <xs:complexType name="uploadFieldComponent">
+    <xs:complexType name="fileUploadFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseUploadFieldComponent">
                 <xs:attribute name="fileName" type="resourceString"/>
@@ -2817,6 +2817,8 @@
 
                 <xs:attribute name="maxFileSize" type="xs:int"/>
                 <xs:attribute name="acceptedFileTypes" type="xs:string"/>
+                <xs:attribute name="uploadIcon" type="vaadinIconEnum"/>
+                <xs:attribute name="dropAllowed" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasRequired"/>
             </xs:extension>
@@ -3068,7 +3070,7 @@
                 <xs:element name="loginForm" type="loginFormComponent"/>
                 <xs:element name="loginOverlay" type="loginOverlayComponent"/>
                 <xs:element name="simplePagination" type="simplePaginationComponent"/>
-                <xs:element name="uploadField" type="uploadFieldComponent"/>
+                <xs:element name="fileUploadField" type="fileUploadFieldComponent"/>
                 <xs:element name="fileStorageUploadField" type="fileStorageUploadFieldComponent"/>
             </xs:choice>
         </xs:sequence>

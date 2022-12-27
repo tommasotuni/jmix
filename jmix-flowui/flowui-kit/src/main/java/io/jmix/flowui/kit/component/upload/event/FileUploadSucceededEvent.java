@@ -18,8 +18,10 @@ package io.jmix.flowui.kit.component.upload.event;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.SucceededEvent;
 import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 
 /**
  * Event is fired when {@link SucceededEvent} of {@link Upload} is occurred. See
@@ -30,7 +32,19 @@ import com.vaadin.flow.component.upload.Upload;
  */
 public class FileUploadSucceededEvent<C extends Component> extends FileUploadFinishedEvent<C> {
 
-    public FileUploadSucceededEvent(C source, String fileName, String mimeType, long length) {
+    protected Receiver receiver;
+
+    public FileUploadSucceededEvent(C source, String fileName, String mimeType, long length, Receiver receiver) {
         super(source, fileName, mimeType, length);
+
+        this.receiver = receiver;
+    }
+
+    /**
+     * @return receiver that contains information about uploaded file
+     * @see MemoryBuffer
+     */
+    public <T extends Receiver> T getReceiver() {
+        return (T) receiver;
     }
 }

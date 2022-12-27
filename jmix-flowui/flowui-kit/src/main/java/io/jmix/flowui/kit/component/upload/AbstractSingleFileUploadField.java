@@ -24,7 +24,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.upload.*;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.shared.Registration;
@@ -39,7 +38,7 @@ import javax.annotation.Nullable;
 @Tag("jmix-upload-field")
 @JsModule("./src/uploadfield/jmix-upload-field.js")
 public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFileUploadField<C, V>, V>
-        extends AbstractField<AbstractSingleFileUploadField<C, V>, V>
+        extends AbstractField<C, V>
         implements HasLabel, HasHelper, HasSize, HasStyle {
 
     protected static final String INPUT_CONTAINER_CLASS_NAME = "jmix-upload-field-input-container";
@@ -54,6 +53,9 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     protected Component clearComponent;
 
     protected V internalValue;
+
+    protected String uploadText;
+    protected String fileNotSelectedText;
 
     public AbstractSingleFileUploadField(V defaultValue) {
         super(defaultValue);
@@ -71,7 +73,6 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
         initClearComponent(clearComponent);
 
         attachContent(content);
-        attachUploadEvents(upload);
     }
 
     protected JmixUpload createUploadComponent() {
@@ -129,7 +130,6 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     }
 
     protected void initUploadComponent(JmixUpload upload) {
-        upload.setDropAllowed(false);
         upload.setReceiver(createUploadReceiver());
 
         Component uploadButtonComponent = createUploadButtonComponent();
@@ -296,7 +296,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
 
     protected void onSucceededEvent(SucceededEvent event) {
         getEventBus().fireEvent(new FileUploadSucceededEvent<>(this, event.getFileName(), event.getMIMEType(),
-                event.getContentLength()));
+                event.getContentLength(), upload.getReceiver()));
     }
 
     /**
@@ -341,28 +341,100 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
         Preconditions.checkNotNull(i18n);
 
         upload.setI18n(i18n);
-
-        applyI18n(i18n);
     }
 
-    protected void applyI18n(JmixUploadI18N i18n) {
-        upload.setI18n(i18n);
+    /**
+     * @return a component that is set as icon to upload button or {@code null} if not set
+     */
+    @Nullable
+    public Component getUploadIcon() {
+        Component uploadButton = upload.getUploadButton();
+        if (uploadButton instanceof Button) {
+            return ((Button) uploadButton).getIcon();
+        }
+        return null;
+    }
 
-        if (i18n.getUploadText() != null) {
-            setComponentText(upload.getUploadButton(), i18n.getUploadText());
+    /**
+     * Sets a component as icon to upload button.
+     *
+     * @param icon component to set as icon
+     */
+    public void setUploadIcon(@Nullable Component icon) {
+        Component uploadButton = upload.getUploadButton();
+        if (uploadButton instanceof Button) {
+            ((Button) uploadButton).setIcon(icon);
         }
     }
 
-    public void setUploadIcon(Icon icon) {
-        // todo rp?
+    /**
+     * @return {@code true} if file dropping is enabled, {@code false} otherwise.
+     * @see Upload#isDropAllowed()
+     */
+    public boolean isDropAllowed() {
+        return upload.isDropAllowed();
+    }
+
+    /**
+     * Sets whether the component supports dropping files for uploading. The default value is {@code true}.
+     * <p>
+     * See {@link Upload#setDropAllowed(boolean)} for details.
+     *
+     * @param allowed {@code true} to enable dropping
+     */
+    public void setDropAllowed(boolean allowed) {
+        upload.setDropAllowed(allowed);
+    }
+
+    /**
+     * @return text that should be shown in the upload button or {@code null} if not set
+     */
+    @Nullable
+    public String getUploadText() {
+        return uploadText;
+    }
+
+    /**
+     * Sets the text that should be shown in the upload button.
+     *
+     * @param uploadText text to set
+     */
+    public void setUploadText(@Nullable String uploadText) {
+        this.uploadText = uploadText;
+
+        setComponentText(upload.getUploadButton(),
+                Strings.isNullOrEmpty(uploadText)
+                        ? JmixUploadI18N.UPLOAD
+                        : uploadText);
+    }
+
+    /**
+     * @return text that is shown when file is not uploaded or {@code null} if not set
+     */
+    @Nullable
+    public String getFileNotSelectedText() {
+        return fileNotSelectedText;
+    }
+
+    /**
+     * Sets text that is shown when file is not uploaded
+     *
+     * @param fileNotSelectedText text to set
+     */
+    public void setFileNotSelectedText(@Nullable String fileNotSelectedText) {
+        this.fileNotSelectedText = fileNotSelectedText;
+
+        setComponentText(fileNameComponent,
+                Strings.isNullOrEmpty(fileNotSelectedText)
+                        ? generateFileName()
+                        : fileNotSelectedText);
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V>> listener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<C, V>> listener) {
         @SuppressWarnings("rawtypes")
         ComponentEventListener componentListener = event -> {
-            ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V> valueChangeEvent =
-                    (ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V>) event;
+            ComponentValueChangeEvent<C, V> valueChangeEvent = (ComponentValueChangeEvent<C, V>) event;
             listener.valueChanged(valueChangeEvent);
         };
 
@@ -431,6 +503,12 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     protected void setComponentText(Component component, String text) {
         if (component instanceof HasText) {
             ((HasText) component).setText(Strings.nullToEmpty(text));
+        }
+    }
+
+    protected void setComponentClickListener(Component component, ComponentEventListener<ClickEvent<?>> listener) {
+        if (component instanceof ClickNotifier) {
+            ((ClickNotifier<?>) component).addClickListener((ComponentEventListener) listener);
         }
     }
 
