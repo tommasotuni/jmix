@@ -55,15 +55,23 @@ public class TemporaryStorageReceiver implements Receiver {
         return createFileOutputStream(fileInfo.getFile());
     }
 
-    // todo rp javaDocs
+    /**
+     * @return the file info from temporary storage
+     */
     public TemporaryStorage.FileInfo getFileInfo() {
         return fileInfo;
     }
 
+    /**
+     * @return name of uploaded file
+     */
     public String getFileName() {
         return fileName;
     }
 
+    /**
+     * @return MIME type of uploaded file
+     */
     public String getMimeType() {
         return mimeType;
     }

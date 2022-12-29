@@ -18,9 +18,10 @@ package io.jmix.flowui.component.upload;
 
 import com.google.common.base.Strings;
 import com.vaadin.flow.component.*;
-import com.vaadin.flow.component.upload.SucceededEvent;
+import com.vaadin.flow.component.upload.FileRejectedEvent;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Messages;
+import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.HasRequired;
 import io.jmix.flowui.component.SupportsValidation;
 import io.jmix.flowui.component.delegate.FieldDelegate;
@@ -31,6 +32,7 @@ import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.exception.ValidationException;
 import io.jmix.flowui.kit.component.upload.JmixFileUploadField;
 import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
+import io.jmix.flowui.kit.component.upload.event.FileUploadFileRejectedEvent;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,6 +47,7 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
     protected ApplicationContext applicationContext;
     protected Messages messages;
     protected Downloader downloader;
+    protected Notifications notifications;
 
     protected FieldDelegate<FileUploadField, byte[], byte[]> fieldDelegate;
 
@@ -62,19 +65,19 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
     protected void autowireDependencies() {
         messages = applicationContext.getBean(Messages.class);
         downloader = applicationContext.getBean(Downloader.class);
+        notifications = applicationContext.getBean(Notifications.class);
     }
 
     protected void initComponent() {
         fieldDelegate = createFieldDelegate();
 
         setComponentText(fileNameComponent, generateFileName());
-        setComponentText(upload.getUploadButton(), messages.getMessage("fileUploadField.upload.text"));
+        setComponentText(upload.getUploadButton(), getDefaultUploadText());
 
         setComponentClickListener(fileNameComponent, this::onFileNameClick);
 
         applyI18nDefaults();
 
-        attachSucceededListener(this::onUploadSucceededEvent);
         attachValueChangeListener(this::onValueChange);
 
         attachUploadEvents(upload);
@@ -132,16 +135,9 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
         }
 
         byte[] value = getValue();
-        if (value == null) {
-            return;
+        if (value != null) {
+            downloader.download(value, generateFileName());
         }
-
-        String fileName = generateFileName();
-        if (Strings.isNullOrEmpty(fileName)) {
-            fileName = convertValueToFileName(value);
-        }
-
-        downloader.download(value, fileName);
     }
 
     @Override
@@ -156,13 +152,16 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
     }
 
     @Override
+    protected String getDefaultUploadText() {
+        return messages != null
+                ? messages.getMessage("fileUploadField.upload.text")
+                : super.getDefaultUploadText();
+    }
+
+    @Override
     protected String convertValueToFileName(byte[] value) {
         return messages.formatMessage("", "fileUploadField.noFileName",
                 FileUtils.byteCountToDisplaySize(value.length));
-    }
-
-    protected void attachSucceededListener(ComponentEventListener<SucceededEvent> listener) {
-        upload.addSucceededListener(listener);
     }
 
     protected void attachValueChangeListener(
@@ -172,6 +171,16 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
 
     protected void onValueChange(ComponentValueChangeEvent<FileUploadField, byte[]> event) {
         isInvalid();
+    }
+
+    @Override
+    protected void onFileRejectedEvent(FileRejectedEvent event) {
+        if (!getEventBus().hasListener(FileUploadFileRejectedEvent.class)) {
+            notifications.create(event.getErrorMessage())
+                    .withType(Notifications.Type.WARNING)
+                    .show();
+        }
+        super.onFileRejectedEvent(event);
     }
 
     protected void applyI18nDefaults() {

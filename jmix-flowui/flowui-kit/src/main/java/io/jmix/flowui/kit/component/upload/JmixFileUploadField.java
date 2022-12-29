@@ -29,10 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
-
-public class JmixFileUploadField<C extends AbstractSingleFileUploadField<C, byte[]>>
-        extends AbstractSingleFileUploadField<C, byte[]> {
+public class JmixFileUploadField<C extends AbstractSingleUploadField<C, byte[]>>
+        extends AbstractSingleUploadField<C, byte[]> {
 
     private static final String DEFAULT_FILENAME = "attachment";
 
@@ -94,7 +92,13 @@ public class JmixFileUploadField<C extends AbstractSingleFileUploadField<C, byte
         return String.format(DEFAULT_FILENAME + " (%s)", FileUtils.byteCountToDisplaySize(value.length));
     }
 
-    protected void onUploadSucceededEvent(SucceededEvent event) {
+    @Override
+    protected String getDefaultUploadText() {
+        return UPLOAD;
+    }
+
+    @Override
+    protected void onSucceededEvent(SucceededEvent event) {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
         if (receiver instanceof MemoryBuffer) {
@@ -111,10 +115,10 @@ public class JmixFileUploadField<C extends AbstractSingleFileUploadField<C, byte
             }
 
             setInternalValue(value, true);
-            return;
+        } else {
+            throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
         }
-
-        throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
+        super.onSucceededEvent(event);
     }
 
     @Override

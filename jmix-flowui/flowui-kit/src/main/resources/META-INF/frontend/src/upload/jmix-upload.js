@@ -54,6 +54,7 @@ class JmixUpload extends Upload {
         super.ready();
 
         this.$.fileList.hidden = true;
+        this.$.dropLabelContainer.hidden = true;
 
         this.addEventListener("upload-progress", this._onUploadProgressEvent.bind(this));
         this.addEventListener('upload-success', this._onUploadSuccessEvent.bind(this));
@@ -104,7 +105,7 @@ class JmixUpload extends Upload {
     }
 
     _onUploadSuccessEvent(event) {
-        // After uploading button is not active because it reached files limit.
+        // After uploading, button is not active because it reached files limit.
         // Clear uploaded files to enable upload button.
         this.files = [];
         this._closeUploadDialogOnEvent(event);
@@ -130,7 +131,6 @@ class JmixUpload extends Upload {
         this.appendChild(uploadDialog);
     }
 
-    // todo rp aria label
     _uploadDialogRenderer() {
         const uploadContext = this;
         return function (root, dialog) {

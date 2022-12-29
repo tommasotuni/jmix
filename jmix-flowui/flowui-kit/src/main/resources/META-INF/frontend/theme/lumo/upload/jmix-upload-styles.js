@@ -21,7 +21,7 @@ const upload = css`
     border: 0;
     overflow: initial;
     padding: 0;
-    transition: background-color 0.6s, border-color 0.6s;
+    transition: background-color 0.6s;
   }
   [part='drop-label'] {
     display: none;

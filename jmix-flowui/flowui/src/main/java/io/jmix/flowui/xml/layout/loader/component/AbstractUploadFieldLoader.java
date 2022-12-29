@@ -19,14 +19,14 @@ package io.jmix.flowui.xml.layout.loader.component;
 import com.vaadin.flow.component.upload.UploadI18N;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.kit.component.FlowuiComponentUtils;
-import io.jmix.flowui.kit.component.upload.AbstractSingleFileUploadField;
+import io.jmix.flowui.kit.component.upload.AbstractSingleUploadField;
 import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import io.jmix.flowui.xml.layout.support.DataLoaderSupport;
 import org.dom4j.Element;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractUploadFieldLoader<C extends AbstractSingleFileUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
+public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
 
     protected DataLoaderSupport dataLoaderSupport;
 
@@ -41,6 +41,9 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleFileUplo
 
         componentLoader().loadHelperText(resultComponent, element);
         componentLoader().loadValueAndElementAttributes(resultComponent, element);
+
+        getLoaderSupport().loadResourceString(element, "clearButtonAriaLabel", context.getMessageGroup(),
+                resultComponent::setClearButtonAriaLabel);
 
         getLoaderSupport().loadInteger(element, "maxFileSize", resultComponent::setMaxFileSize);
         getLoaderSupport().loadStringVarargs(element, "acceptedFileTypes",

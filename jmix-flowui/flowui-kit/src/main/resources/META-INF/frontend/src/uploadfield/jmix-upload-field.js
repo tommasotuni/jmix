@@ -17,9 +17,10 @@
 import '@vaadin/input-container/src/vaadin-input-container.js';
 import {html, PolymerElement} from '@polymer/polymer';
 import {ElementMixin} from '@vaadin/component-base/src/element-mixin.js';
-import {InputController} from '@vaadin/field-base/src/input-controller.js';
-import {InputFieldMixin} from '@vaadin/field-base/src/input-field-mixin.js';
-import {LabelledInputController} from '@vaadin/field-base/src/labelled-input-controller.js';
+import { DelegateFocusMixin } from '@vaadin/field-base/src/delegate-focus-mixin.js';
+import { FieldMixin } from '@vaadin/field-base/src/field-mixin.js';
+import { InputConstraintsMixin } from '@vaadin/field-base/src/input-constraints-mixin.js';
+import { SlotStylesMixin } from '@vaadin/field-base/src/slot-styles-mixin.js';
 import {inputFieldShared} from '@vaadin/field-base/src/styles/input-field-shared-styles.js';
 import {css, registerStyles, ThemableMixin} from '@vaadin/vaadin-themable-mixin/vaadin-themable-mixin.js';
 
@@ -45,7 +46,8 @@ registerStyles('jmix-upload-field', [inputFieldShared, uploadField], {
     moduleId: 'jmix-upload-field-styles'
 });
 
-export class JmixUploadField extends InputFieldMixin(ThemableMixin(ElementMixin(PolymerElement))) {
+export class JmixUploadField extends SlotStylesMixin(DelegateFocusMixin(InputConstraintsMixin(FieldMixin(ThemableMixin(
+    ElementMixin(PolymerElement)))))) {
 
     static get is() {
         return 'jmix-upload-field';
@@ -95,30 +97,9 @@ export class JmixUploadField extends InputFieldMixin(ThemableMixin(ElementMixin(
         return {};
     }
 
-    constructor() {
-        super();
-        this._setType('text');
-    }
-
     /** @protected */
-    get clearElement() {
-        return null;
-    }
-
-    /** @protected */
-    ready() {
-        super.ready();
-
-        // todo rp
-        /* this.addController(
-             new InputController(this, (input) => {
-                 this._setInputElement(input);
-                 this._setFocusElement(input);
-                 this.stateTarget = input;
-                 this.ariaTarget = input;
-             })
-         );
-         this.addController(new LabelledInputController(this.inputElement, this._labelController));*/
+    get slotStyles() {
+        return [];
     }
 }
 

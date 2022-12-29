@@ -18,10 +18,8 @@ package io.jmix.flowui.kit.component.upload;
 
 import com.google.common.base.Strings;
 
-import static io.jmix.flowui.kit.component.upload.JmixUploadI18N.FILE_NOT_SELECTED;
-
-public class JmixFileStorageUploadField<C extends AbstractSingleFileUploadField<C, V>, V>
-        extends AbstractSingleFileUploadField<C, V> {
+public class JmixFileStorageUploadField<C extends AbstractSingleUploadField<C, V>, V>
+        extends AbstractSingleUploadField<C, V> {
 
     protected FileStoragePutMode fileStoragePutMode = FileStoragePutMode.IMMEDIATE;
     protected String fileStorageName;
@@ -34,19 +32,33 @@ public class JmixFileStorageUploadField<C extends AbstractSingleFileUploadField<
         super(defaultValue);
     }
 
-    // todo rp javDocs
+    /**
+     * @return mode which determines when file will be put into FileStorage
+     */
     public FileStoragePutMode getFileStoragePutMode() {
         return fileStoragePutMode;
     }
 
+    /**
+     * Sets mode which determines when file will be put into FileStorage.
+     */
     public void setFileStoragePutMode(FileStoragePutMode putMode) {
         this.fileStoragePutMode = putMode;
     }
 
+    /**
+     * @return the name of FileStorage where the upload file will be placed
+     */
     public String getFileStorageName() {
         return fileStorageName;
     }
 
+    /**
+     * Sets the name of FileStorage where the upload file will be placed. If not set, the default
+     * FileStorage will be used.
+     *
+     * @param fileStorageName the name of file storage
+     */
     public void setFileStorageName(String fileStorageName) {
         this.fileStorageName = fileStorageName;
     }
@@ -59,5 +71,10 @@ public class JmixFileStorageUploadField<C extends AbstractSingleFileUploadField<
                     : getFileNotSelectedText();
         }
         return getValue().toString();
+    }
+
+    @Override
+    protected String getDefaultUploadText() {
+        return UPLOAD;
     }
 }

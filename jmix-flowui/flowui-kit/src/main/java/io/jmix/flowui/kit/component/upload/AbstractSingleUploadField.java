@@ -26,6 +26,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.upload.*;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.ElementConstants;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.kit.component.upload.event.*;
 
@@ -37,7 +39,7 @@ import javax.annotation.Nullable;
  */
 @Tag("jmix-upload-field")
 @JsModule("./src/uploadfield/jmix-upload-field.js")
-public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFileUploadField<C, V>, V>
+public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadField<C, V>, V>
         extends AbstractField<C, V>
         implements HasLabel, HasHelper, HasSize, HasStyle {
 
@@ -45,6 +47,10 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     protected static final String FILE_NAME_COMPONENT_CLASS_NAME = "jmix-upload-field-file-name";
     protected static final String FILE_NAME_COMPONENT_EMPTY_CLASS_NAME = "empty";
     protected static final String CLEAR_COMPONENT_CLASS_NAME = "jmix-upload-field-clear";
+
+    protected static final String FILE_NOT_SELECTED = "File is not selected";
+    protected static final String UPLOAD = "Upload";
+    protected static final String CLEAR_COMPONENT_ARIA_LABEL = "Remove file";
 
     protected JmixUpload upload;
     protected HasComponents content;
@@ -57,7 +63,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     protected String uploadText;
     protected String fileNotSelectedText;
 
-    public AbstractSingleFileUploadField(V defaultValue) {
+    public AbstractSingleUploadField(V defaultValue) {
         super(defaultValue);
 
         content = createContentComponent();
@@ -108,10 +114,8 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
 
     protected void initClearComponent(Component clearComponent) {
         addClassNames(clearComponent, CLEAR_COMPONENT_CLASS_NAME);
-
-        if (clearComponent instanceof ClickNotifier) {
-            ((ClickNotifier<?>) clearComponent).addClickListener(this::onClearButtonClick);
-        }
+        setComponentClickListener(clearComponent, this::onClearButtonClick);
+        setComponentAriaLabel(clearComponent, CLEAR_COMPONENT_ARIA_LABEL);
     }
 
     protected void onClearButtonClick(ClickEvent<?> clickEvent) {
@@ -142,7 +146,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     }
 
     protected void initUploadButtonComponent(Component component) {
-        setComponentText(component, JmixUploadI18N.UPLOAD);
+        setComponentText(component, UPLOAD);
     }
 
     protected void attachUploadEvents(JmixUpload upload) {
@@ -395,7 +399,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     }
 
     /**
-     * Sets the text that should be shown in the upload button.
+     * Sets the text that should be shown in the upload button. {@code null} value resets the default value.
      *
      * @param uploadText text to set
      */
@@ -404,7 +408,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
 
         setComponentText(upload.getUploadButton(),
                 Strings.isNullOrEmpty(uploadText)
-                        ? JmixUploadI18N.UPLOAD
+                        ? getDefaultUploadText()
                         : uploadText);
     }
 
@@ -428,6 +432,24 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
                 Strings.isNullOrEmpty(fileNotSelectedText)
                         ? generateFileName()
                         : fileNotSelectedText);
+    }
+
+    /**
+     * @return aria-label of clear button or {@code null} if not set
+     */
+    @Nullable
+    public String getClearButtonAriaLabel() {
+        Element element = upload.getUploadButton().getElement();
+        return element.getAttribute(ElementConstants.ARIA_LABEL_PROPERTY_NAME);
+    }
+
+    /**
+     * Sets aria-label attribute to clear button.
+     *
+     * @param ariaLabel aria-label to set
+     */
+    public void setClearButtonAriaLabel(@Nullable String ariaLabel) {
+        setComponentAriaLabel(upload.getUploadButton(), ariaLabel);
     }
 
     @Override
@@ -456,7 +478,7 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
         // update presentation
         setPresentationValue(value);
 
-        ComponentValueChangeEvent<AbstractSingleFileUploadField<C, V>, V> event =
+        ComponentValueChangeEvent<AbstractSingleUploadField<C, V>, V> event =
                 new ComponentValueChangeEvent<>(this, this, oldValue, fromClient);
         fireEvent(event);
     }
@@ -481,6 +503,8 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
     }
 
     protected abstract String generateFileName();
+
+    protected abstract String getDefaultUploadText();
 
     protected void addClassNames(HasElement component, String... classNames) {
         if (component instanceof HasStyle) {
@@ -512,8 +536,17 @@ public abstract class AbstractSingleFileUploadField<C extends AbstractSingleFile
         }
     }
 
+    protected void setComponentAriaLabel(Component component, @Nullable String ariaLabel) {
+        if (ariaLabel == null) {
+            component.getElement().removeAttribute(ElementConstants.ARIA_LABEL_PROPERTY_NAME);
+        } else {
+            component.getElement().setAttribute(ElementConstants.ARIA_LABEL_PROPERTY_NAME, ariaLabel);
+        }
+    }
+
     protected void updateReadOnly() {
         upload.setReadOnly(isReadOnly());
+        upload.setVisible(!isReadOnly());
         clearComponent.setVisible(!isReadOnly());
     }
 }

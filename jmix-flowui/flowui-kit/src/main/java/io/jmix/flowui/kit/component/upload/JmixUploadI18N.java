@@ -25,9 +25,6 @@ import javax.annotation.Nullable;
  */
 public class JmixUploadI18N extends UploadI18N {
 
-    public static final String FILE_NOT_SELECTED = "File is not selected";
-    public static final String UPLOAD = "Upload";
-
     protected UploadDialog uploadDialog;
 
     /**

@@ -2815,6 +2815,8 @@
                 <xs:attribute name="uploadDialogTitle" type="resourceString"/>
                 <xs:attribute name="uploadDialogCancelText" type="resourceString"/>
 
+                <xs:attribute name="clearButtonAriaLabel" type="resourceString"/>
+
                 <xs:attribute name="maxFileSize" type="xs:int"/>
                 <xs:attribute name="acceptedFileTypes" type="xs:string"/>
                 <xs:attribute name="uploadIcon" type="vaadinIconEnum"/>

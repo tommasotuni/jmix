@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-import './jmix-upload-field-styles.js';
 import '../../../src/uploadfield/jmix-upload-field.js';
