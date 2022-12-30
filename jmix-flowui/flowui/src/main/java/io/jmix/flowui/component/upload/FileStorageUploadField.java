@@ -157,7 +157,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
     }
 
     /**
-     * Add a succeeded listener that is informed on upload succeeded.
+     * Adds a succeeded listener that is informed on upload succeeded.
      * <p>
      * For instance, if component has {@link FileStoragePutMode#MANUAL},
      * we can handle the uploading, like the following:
@@ -190,8 +190,13 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
 
     @Override
     protected void onSucceededEvent(SucceededEvent event) {
-        Upload upload = event.getUpload();
-        Receiver receiver = upload.getReceiver();
+        saveFile(event);
+
+        super.onSucceededEvent(event);
+    }
+
+    protected void saveFile(SucceededEvent event) {
+        Receiver receiver = event.getUpload().getReceiver();
 
         if (receiver instanceof TemporaryStorageReceiver) {
             TemporaryStorageReceiver storageReceiver = (TemporaryStorageReceiver) receiver;
@@ -215,7 +220,6 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
         } else {
             throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
         }
-        super.onSucceededEvent(event);
     }
 
     @Override
@@ -283,6 +287,12 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
 
     @Override
     protected void onFailedEvent(FailedEvent event) {
+        deleteTempFile();
+
+        super.onFailedEvent(event);
+    }
+
+    protected void deleteTempFile() {
         Receiver receiver = upload.getReceiver();
         if (receiver instanceof TemporaryStorageReceiver) {
             UUID tempFileId = ((TemporaryStorageReceiver) receiver).getFileInfo().getId();
@@ -297,8 +307,9 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
                 }
                 log.warn(String.format("Error while delete temp file %s", tempFileId));
             }
+        } else {
+            throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
         }
-        super.onFailedEvent(event);
     }
 
     protected void applyI18nDefaults() {

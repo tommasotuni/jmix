@@ -99,8 +99,15 @@ public class JmixFileUploadField<C extends AbstractSingleUploadField<C, byte[]>>
 
     @Override
     protected void onSucceededEvent(SucceededEvent event) {
+        saveFile(event);
+
+        super.onSucceededEvent(event);
+    }
+
+    protected void saveFile(SucceededEvent event) {
         Upload upload = event.getUpload();
         Receiver receiver = upload.getReceiver();
+
         if (receiver instanceof MemoryBuffer) {
             uploadedFileName = event.getFileName();
 
@@ -118,7 +125,6 @@ public class JmixFileUploadField<C extends AbstractSingleUploadField<C, byte[]>>
         } else {
             throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());
         }
-        super.onSucceededEvent(event);
     }
 
     @Override
