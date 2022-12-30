@@ -25,6 +25,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.core.*;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.HasRequired;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.SupportsValidation;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.upload.receiver.TemporaryStorageReceiver;
@@ -50,10 +51,11 @@ import org.springframework.context.ApplicationContextAware;
 import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class FileStorageUploadField extends JmixFileStorageUploadField<FileStorageUploadField, FileRef>
-        implements SupportsValueSource<FileRef>, SupportsValidation<FileRef>, HasRequired, ApplicationContextAware,
-        InitializingBean {
+        implements SupportsValueSource<FileRef>, SupportsValidation<FileRef>, HasRequired,
+        SupportsStatusChangeHandler<FileStorageUploadField>, ApplicationContextAware, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(FileStorageUploadField.class);
 
     protected ApplicationContext applicationContext;
@@ -149,6 +151,11 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
         fieldDelegate.setValueSource(valueSource);
     }
 
+    @Override
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<FileStorageUploadField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
+    }
+
     /**
      * Add a succeeded listener that is informed on upload succeeded.
      * <p>
@@ -202,8 +209,8 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
                 // clear previous value silently
                 internalValue = null;
                 setPresentationValue(null);
-                // update file name explicitly
-                setComponentText(fileNameComponent, storageReceiver.getFileName());
+                // set default file name label
+                setComponentText(fileNameComponent, generateFileName());
             }
         } else {
             throw new IllegalStateException("Unsupported receiver: " + receiver.getClass().getName());

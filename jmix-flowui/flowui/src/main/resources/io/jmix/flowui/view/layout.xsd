@@ -1822,15 +1822,10 @@
     <xs:complexType name="baseFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseComponent">
-                <xs:sequence>
-                    <xs:element name="validators" minOccurs="0" type="constraintValidatorType"/>
-                </xs:sequence>
-
                 <xs:attributeGroup ref="hasSize"/>
                 <xs:attributeGroup ref="hasLabel"/>
                 <xs:attributeGroup ref="hasEnabled"/>
                 <xs:attributeGroup ref="hasClassNames"/>
-                <xs:attributeGroup ref="hasValidation"/>
                 <xs:attributeGroup ref="hasHelperText"/>
                 <xs:attributeGroup ref="hasDataContainer"/>
                 <xs:attributeGroup ref="hasValueAndElement"/>
@@ -1838,9 +1833,21 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="baseTextFieldComponent">
+    <xs:complexType name="validatableBaseFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="validators" minOccurs="0" type="constraintValidatorType"/>
+                </xs:sequence>
+
+                <xs:attributeGroup ref="hasValidation"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="baseTextFieldComponent">
+        <xs:complexContent>
+            <xs:extension base="validatableBaseFieldComponent">
                 <xs:attribute name="value" type="xs:string"/>
                 <xs:attribute name="autofocus" type="xs:boolean"/>
                 <xs:attribute name="autoselect" type="xs:boolean"/>
@@ -2339,7 +2346,7 @@
     <!-- ComboBox-->
     <xs:complexType name="comboBoxComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="validatableBaseFieldComponent">
                 <xs:attribute name="pattern" type="xs:string"/>
                 <xs:attribute name="autoOpen" type="xs:boolean"/>
                 <xs:attribute name="pageSize" type="xs:integer"/>
@@ -2382,7 +2389,7 @@
     <!-- TimePicker-->
     <xs:complexType name="timePickerComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="validatableBaseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validators" minOccurs="0" type="dateValidatorsType"/>
                 </xs:sequence>
@@ -2404,7 +2411,7 @@
     <!-- DatePicker-->
     <xs:complexType name="datePickerComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="validatableBaseFieldComponent">
                 <xs:sequence>
                     <xs:element name="validators" minOccurs="0" type="dateValidatorsType"/>
                 </xs:sequence>
@@ -2425,7 +2432,7 @@
     <!-- DateTimePicker-->
     <xs:complexType name="dateTimePickerComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="validatableBaseFieldComponent">
                 <!--                <xs:attribute name="max" type="timePickerMaxVariants"/>-->
                 <!--                <xs:attribute name="min" type="timePickerMinVariants"/>-->
                 <!--                <xs:attribute name="locale" type="timePickerLocaleVariants"/>-->
@@ -2572,7 +2579,7 @@
     <!-- ValuePicker-->
     <xs:complexType name="valuePickerComponent">
         <xs:complexContent>
-            <xs:extension base="baseFieldComponent">
+            <xs:extension base="validatableBaseFieldComponent">
                 <xs:sequence>
                     <xs:element name="actions" minOccurs="0">
                         <xs:complexType>
@@ -2889,6 +2896,7 @@
                 <xs:attribute name="dropAllowed" type="xs:boolean"/>
 
                 <xs:attributeGroup ref="hasRequired"/>
+                <xs:attributeGroup ref="hasValidation"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

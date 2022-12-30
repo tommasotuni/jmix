@@ -23,6 +23,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Messages;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.component.HasRequired;
+import io.jmix.flowui.component.SupportsStatusChangeHandler;
 import io.jmix.flowui.component.SupportsValidation;
 import io.jmix.flowui.component.delegate.FieldDelegate;
 import io.jmix.flowui.component.validation.Validator;
@@ -40,9 +41,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class FileUploadField extends JmixFileUploadField<FileUploadField> implements SupportsValueSource<byte[]>,
-        SupportsValidation<byte[]>, HasRequired, ApplicationContextAware, InitializingBean {
+        SupportsValidation<byte[]>, SupportsStatusChangeHandler<FileUploadField>, HasRequired, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
     protected Messages messages;
@@ -127,6 +129,11 @@ public class FileUploadField extends JmixFileUploadField<FileUploadField> implem
     @Override
     public void setInvalid(boolean invalid) {
         fieldDelegate.setInvalid(invalid);
+    }
+
+    @Override
+    public void setStatusChangeHandler(@Nullable Consumer<StatusContext<FileUploadField>> handler) {
+        fieldDelegate.setStatusChangeHandler(handler);
     }
 
     protected void onFileNameClick(ClickEvent<?> clickEvent) {

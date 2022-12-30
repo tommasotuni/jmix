@@ -32,6 +32,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.kit.component.upload.event.*;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @param <C> type of upload field
@@ -304,6 +305,13 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
     }
 
     /**
+     * @return the maximum allowed file size in the client-side, in bytes
+     */
+    public int getMaxFileSize() {
+        return upload.getMaxFileSize();
+    }
+
+    /**
      * Specify the maximum file size in bytes allowed to upload. Notice that it is a client-side constraint,
      * which will be checked before sending the request.
      *
@@ -312,6 +320,13 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
      */
     public void setMaxFileSize(int maxFileSize) {
         upload.setMaxFileSize(maxFileSize);
+    }
+
+    /**
+     * @return the list of accepted file types for upload
+     */
+    public List<String> getAcceptedFileTypes() {
+        return upload.getAcceptedFileTypes();
     }
 
     /**
