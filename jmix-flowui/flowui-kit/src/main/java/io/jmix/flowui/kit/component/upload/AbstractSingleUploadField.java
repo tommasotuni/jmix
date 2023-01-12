@@ -157,6 +157,8 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
         upload.addFailedListener(this::onFailedEvent);
         upload.addFileRejectedListener(this::onFileRejectedEvent);
         upload.addSucceededListener(this::onSucceededEvent);
+
+        upload.addUploadInternalError(this::onJmixUploadInternalError);
     }
 
     protected void initContentComponent(HasComponents component) {
@@ -311,13 +313,6 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
         return upload.getMaxFileSize();
     }
 
-    /**
-     * Specify the maximum file size in bytes allowed to upload. Notice that it is a client-side constraint,
-     * which will be checked before sending the request.
-     *
-     * @param maxFileSize the maximum file size in bytes
-     * @see Upload#setMaxFileSize(int)
-     */
     public void setMaxFileSize(int maxFileSize) {
         upload.setMaxFileSize(maxFileSize);
     }
@@ -520,6 +515,14 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
     protected abstract String generateFileName();
 
     protected abstract String getDefaultUploadText();
+
+    protected void onJmixUploadInternalError(JmixUpload.JmixUploadInternalErrorEvent event) {
+        handleJmixUploadInternalError(event.getFileName());
+    }
+
+    protected void handleJmixUploadInternalError(String fileName) {
+        // used in inheritors
+    }
 
     protected void addClassNames(HasElement component, String... classNames) {
         if (component instanceof HasStyle) {

@@ -16,6 +16,7 @@
 
 package io.jmix.flowui.xml.layout.loader.component;
 
+import com.google.common.base.Splitter;
 import com.vaadin.flow.component.upload.UploadI18N;
 import io.jmix.flowui.data.SupportsValueSource;
 import io.jmix.flowui.kit.component.FlowuiComponentUtils;
@@ -24,6 +25,9 @@ import io.jmix.flowui.kit.component.upload.JmixUploadI18N;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import io.jmix.flowui.xml.layout.support.DataLoaderSupport;
 import org.dom4j.Element;
+
+import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadField & SupportsValueSource> extends AbstractComponentLoader<C> {
@@ -46,8 +50,8 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadFi
                 resultComponent::setClearButtonAriaLabel);
 
         getLoaderSupport().loadInteger(element, "maxFileSize", resultComponent::setMaxFileSize);
-        getLoaderSupport().loadStringVarargs(element, "acceptedFileTypes",
-                resultComponent::setAcceptedFileTypes);
+        loadAcceptedFileTypes(element)
+                .ifPresent(types-> resultComponent.setAcceptedFileTypes(types.toArray(new String[0])));
 
         getLoaderSupport().loadBoolean(element, "dropAllowed", resultComponent::setDropAllowed);
 
@@ -111,28 +115,36 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadFi
                 : jmixUploadI18n.getUploadDialog();
     }
 
-    public UploadI18N.Error getOrCreateError(JmixUploadI18N jmixUploadI18n) {
+    protected UploadI18N.Error getOrCreateError(JmixUploadI18N jmixUploadI18n) {
         return jmixUploadI18n.getError() == null
                 ? new UploadI18N.Error()
                 : jmixUploadI18n.getError();
     }
 
-    public UploadI18N.Uploading getOrCreateUploading(JmixUploadI18N jmixUploadI18n) {
+    protected UploadI18N.Uploading getOrCreateUploading(JmixUploadI18N jmixUploadI18n) {
         return jmixUploadI18n.getUploading() == null
                 ? new UploadI18N.Uploading()
                 : jmixUploadI18n.getUploading();
     }
 
-    public UploadI18N.Uploading.Status getOrCreateStatus(UploadI18N.Uploading uploading) {
+    protected UploadI18N.Uploading.Status getOrCreateStatus(UploadI18N.Uploading uploading) {
         return uploading.getStatus() == null
                 ? new UploadI18N.Uploading.Status()
                 : uploading.getStatus();
     }
 
-    public UploadI18N.Uploading.RemainingTime getCreateRemainingTime(UploadI18N.Uploading uploading) {
+    protected UploadI18N.Uploading.RemainingTime getCreateRemainingTime(UploadI18N.Uploading uploading) {
         return uploading.getRemainingTime() == null
                 ? new UploadI18N.Uploading.RemainingTime()
                 : uploading.getRemainingTime();
+    }
+
+    protected Optional<List<String>> loadAcceptedFileTypes(Element element) {
+        return loadString(element, "acceptedFileTypes")
+                .map(s -> Splitter.onPattern("[\\s,]+")
+                        .omitEmptyStrings()
+                        .trimResults()
+                        .splitToList(s));
     }
 
     protected DataLoaderSupport getDataLoaderSupport() {

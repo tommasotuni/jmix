@@ -42,7 +42,6 @@ class FileStorageUploadFieldXmlLoadTest extends FlowuiTestSpecification{
         when: "Open view with FileStorageUploadField"
         def view = openScreen(FileStorageUploadFieldView)
 
-
         then: "Field should be bound with data container"
 
         view.dataSourceFileStorageUploadField.valueSource != null

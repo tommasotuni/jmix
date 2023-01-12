@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -64,6 +66,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
     protected Downloader downloader;
     protected Notifications notifications;
     protected Messages messages;
+    protected ObjectProvider<MultipartProperties> multipartPropertiesProvider;
 
     protected FieldDelegate<FileStorageUploadField, FileRef, FileRef> fieldDelegate;
 
@@ -86,6 +89,7 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
         downloader = applicationContext.getBean(Downloader.class);
         messages = applicationContext.getBean(Messages.class);
         notifications = applicationContext.getBean(Notifications.class);
+        multipartPropertiesProvider = applicationContext.getBeanProvider(MultipartProperties.class);
     }
 
     protected void initComponent() {
@@ -93,10 +97,12 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
 
         upload.setReceiver(applicationContext.getBean(TemporaryStorageReceiver.class));
 
+        setComponentClickListener(fileNameComponent, this::onFileNameClick);
         setComponentText(fileNameComponent, generateFileName());
         setComponentText(upload.getUploadButton(), getDefaultUploadText());
 
-        setComponentClickListener(fileNameComponent, this::onFileNameClick);
+        multipartPropertiesProvider.ifAvailable(properties ->
+                setMaxFileSize((int) properties.getMaxFileSize().toBytes()));
 
         applyI18nDefaults();
 
@@ -154,6 +160,35 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
     @Override
     public void setStatusChangeHandler(@Nullable Consumer<StatusContext<FileStorageUploadField>> handler) {
         fieldDelegate.setStatusChangeHandler(handler);
+    }
+
+    /**
+     * Specify the maximum file size in bytes allowed to upload. Notice that it is a client-side constraint,
+     * which will be checked before sending the request.
+     * <p>
+     * <strong>Note</strong> if {@link MultipartProperties} is available, the default value will be set from
+     * {@link MultipartProperties#getMaxFileSize()} that is equal to 1Mb. To increase maximum file size for all
+     * fields in the application use {@link MultipartProperties#getMaxFileSize()} property.
+     *
+     * @param maxFileSize the maximum file size in bytes
+     * @see Upload#setMaxFileSize(int)
+     * @see MultipartProperties#getMaxFileSize()
+     * @see MultipartProperties#getMaxRequestSize()
+     */
+    @Override
+    public void setMaxFileSize(int maxFileSize) {
+        multipartPropertiesProvider.ifAvailable(properties -> {
+            if (maxFileSize > properties.getMaxFileSize().toBytes()
+                    && !properties.getMaxFileSize().isNegative()) {
+                log.warn("The provided maximum file size '{}B' is greater than server can accept ({}B) that may" +
+                                " lead to unhandled uploading errors. It is recommended to use the same value for upload field" +
+                                " and for server maximum file size value (see" +
+                                " 'org.springframework.boot.autoconfigure.web.servlet.MultipartProperties#maxFileSize').",
+                        maxFileSize, properties.getMaxFileSize().toBytes());
+            }
+        });
+
+        super.setMaxFileSize(maxFileSize);
     }
 
     /**
@@ -259,6 +294,20 @@ public class FileStorageUploadField extends JmixFileStorageUploadField<FileStora
         if (value != null) {
             downloader.download(value);
         }
+    }
+
+    @Override
+    protected void handleJmixUploadInternalError(String fileName) {
+        showUploadErrorNotification(fileName);
+    }
+
+    protected void showUploadErrorNotification(String fileName) {
+        notifications.create(
+                        messages.getMessage("fileStorageUploadField.uploadInternalError.notification.title"),
+                        messages.formatMessage("", "fileStorageUploadField.uploadInternalError.notification.message",
+                                fileName))
+                .withType(Notifications.Type.ERROR)
+                .show();
     }
 
     @Override

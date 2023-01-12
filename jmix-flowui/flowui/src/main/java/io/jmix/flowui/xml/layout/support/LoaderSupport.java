@@ -16,14 +16,12 @@
 
 package io.jmix.flowui.xml.layout.support;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import io.jmix.core.MessageTools;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -125,45 +123,6 @@ public class LoaderSupport {
                 .ifPresent(setter);
     }
 
-    /**
-     * Loads a string that contains values separated by comma. If attribute's value is present,
-     * the {@link String} will be converted to Varargs type ({@code String...}) and setter will
-     * be invoked.
-     *
-     * @param element       the element to obtain value
-     * @param attributeName the name of the attribute value to be returned
-     * @param setter        setter that applies {@link String} {@code Varargs} type
-     */
-    public void loadStringVarargs(Element element, String attributeName, StringVarargsConsumer setter) {
-        loadString(element, attributeName)
-                .ifPresent(s -> {
-                    List<String> args = Splitter.on(",")
-                            .omitEmptyStrings()
-                            .trimResults()
-                            .splitToList(s);
-                    setter.accept(args.toArray(new String[0]));
-                });
-    }
-
-    /**
-     * Loads a string that contains values separated by comma. If attribute's value is present,
-     * the {@link String} will be converted to a list and setter will be invoked.
-     *
-     * @param element       the element to obtain value
-     * @param attributeName the name of the attribute value to be returned
-     * @param setter        setter that applies list of {@link String} type
-     */
-    public void loadStringList(Element element, String attributeName, StringListConsumer setter) {
-        loadString(element, attributeName)
-                .ifPresent(s -> {
-                    List<String> values = Splitter.on(",")
-                            .omitEmptyStrings()
-                            .trimResults()
-                            .splitToList(s);
-                    setter.accept(values);
-                });
-    }
-
     public void loadBoolean(Element element, String attributeName, Consumer<Boolean> setter) {
         loadBoolean(element, attributeName)
                 .ifPresent(setter);
@@ -197,15 +156,5 @@ public class LoaderSupport {
         }
 
         return messageTools.loadString(messageGroup, message);
-    }
-
-    @FunctionalInterface
-    public interface StringVarargsConsumer {
-        void accept(String... args);
-    }
-
-    @FunctionalInterface
-    public interface StringListConsumer {
-        void accept(List<String> values);
     }
 }

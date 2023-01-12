@@ -16,11 +16,12 @@
 
 package io.jmix.flowui.kit.component.upload;
 
-import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.internal.JsonSerializer;
+import com.vaadin.flow.shared.Registration;
 
 @Tag("jmix-upload")
 @JsModule("./src/upload/jmix-upload.js")
@@ -60,6 +61,24 @@ public class JmixUpload extends Upload {
 
         if (this.i18n.getUploadDialog() != null) {
             getElement().setPropertyJson("jmixI18n", JsonSerializer.toJson(this.i18n));
+        }
+    }
+
+    protected Registration addUploadInternalError(ComponentEventListener<JmixUploadInternalErrorEvent> listener) {
+        return addListener( JmixUploadInternalErrorEvent.class, listener);
+    }
+
+    @DomEvent("jmix-upload-internal-error")
+    protected static class JmixUploadInternalErrorEvent extends ComponentEvent<JmixUpload> {
+        protected String fileName;
+
+        public JmixUploadInternalErrorEvent(JmixUpload source, boolean fromClient, @EventData("event.detail.file.name") String fileName) {
+            super(source, fromClient);
+            this.fileName = fileName;
+        }
+
+        public String getFileName() {
+            return fileName;
         }
     }
 }

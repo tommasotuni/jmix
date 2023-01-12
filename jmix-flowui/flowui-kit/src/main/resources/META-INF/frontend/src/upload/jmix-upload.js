@@ -58,10 +58,10 @@ class JmixUpload extends Upload {
 
         this.addEventListener("upload-progress", this._onUploadProgressEvent.bind(this));
         this.addEventListener('upload-success', this._onUploadSuccessEvent.bind(this));
+        this.addEventListener('upload-error', this._onUploadFailedEvent.bind(this));
 
         this.addEventListener('file-abort', this._closeUploadDialogOnEvent.bind(this));
         this.addEventListener('file-reject', this._closeUploadDialogOnEvent.bind(this));
-        this.addEventListener('upload-error', this._closeUploadDialogOnEvent.bind(this));
         this.addEventListener('upload-start', this._openUploadDialogOnEvent.bind(this));
 
         this._initUploadDialog();
@@ -80,7 +80,7 @@ class JmixUpload extends Upload {
      * @override
      */
     _onAddFilesTouchEnd(e) {
-        // Don't open add file dialog if component is readOnly or disabled
+        // Don't open "add file" dialog if component is readOnly or disabled
         if (this.readOnly || !this.enabled) {
             e.stopPropagation();
             e.preventDefault();
@@ -95,7 +95,7 @@ class JmixUpload extends Upload {
      * @override
      */
     _onAddFilesClick(e) {
-        // Don't open add file dialog if component is readOnly or disabled
+        // Don't open "add file" dialog if component is readOnly or disabled
         if (this.readOnly || !this.enabled) {
             e.stopPropagation();
             e.preventDefault();
@@ -106,9 +106,23 @@ class JmixUpload extends Upload {
 
     _onUploadSuccessEvent(event) {
         // After uploading, button is not active because it reached files limit.
-        // Clear uploaded files to enable upload button.
+        // Clear uploaded files to enable uploading.
         this.files = [];
         this._closeUploadDialogOnEvent(event);
+    }
+
+    _onUploadFailedEvent(event) {
+        // After failed uploading, button is not active because it reached files limit.
+        // Clear uploaded files to enable uploading.
+        this.files = [];
+        this._closeUploadDialogOnEvent(event);
+
+        // If server failed uploading file, e.g. TomCat threw FileSizeLimitExceededException,
+        // the FailedEvent is not sent to the server-side of component. This is because the
+        // exception is thrown before the upload request reaches StreamReceiverHandler (see Vaadin
+        // issue https://github.com/vaadin/flow/issues/13770). So we send custom event to inform
+        // that upload failed.
+        this.dispatchEvent(new CustomEvent('jmix-upload-internal-error', {detail: {file: this.file, xhr: this.file.xhr}}));
     }
 
     _openUploadDialogOnEvent(event) {
