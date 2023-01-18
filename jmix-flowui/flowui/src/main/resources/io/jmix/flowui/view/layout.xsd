@@ -2889,6 +2889,8 @@
                 <xs:attribute name="uploadDialogCancelText" type="resourceString"/>
 
                 <xs:attribute name="clearButtonAriaLabel" type="resourceString"/>
+                <xs:attribute name="clearButtonVisible" type="xs:boolean"/>
+                <xs:attribute name="fileNameVisible" type="xs:boolean"/>
 
                 <xs:attribute name="maxFileSize" type="xs:int"/>
                 <xs:attribute name="acceptedFileTypes" type="xs:string"/>

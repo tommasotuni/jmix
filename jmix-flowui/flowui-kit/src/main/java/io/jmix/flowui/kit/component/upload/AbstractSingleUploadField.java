@@ -64,6 +64,9 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
     protected String uploadText;
     protected String fileNotSelectedText;
 
+    protected boolean clearButtonVisible = false;
+    protected boolean fileNameVisible = false;
+
     public AbstractSingleUploadField(V defaultValue) {
         super(defaultValue);
 
@@ -78,6 +81,8 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
 
         clearComponent = createClearComponent();
         initClearComponent(clearComponent);
+
+        updateComponentsVisibility();
 
         attachContent(content);
     }
@@ -197,7 +202,9 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
     public void setReadOnly(boolean readOnly) {
         super.setReadOnly(readOnly);
 
-        updateReadOnly();
+        upload.setReadOnly(isReadOnly());
+
+        updateComponentsVisibility();
     }
 
     @Override
@@ -445,6 +452,46 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
     }
 
     /**
+     * @return {@code true} if name of uploaded file is shown
+     */
+    public boolean isFileNameVisible() {
+        return fileNameVisible;
+    }
+
+    /**
+     * Enables or disables displaying name of uploaded file.
+     * <p>
+     * The default value is {@code false}.
+     *
+     * @param visible whether file name should be shown
+     */
+    public void setFileNameVisible(boolean visible) {
+        fileNameVisible = visible;
+
+        updateComponentsVisibility();
+    }
+
+    /**
+     * @return {@code true} if clear button is shown
+     */
+    public boolean isClearButtonVisible() {
+        return clearButtonVisible;
+    }
+
+    /**
+     * Enables or disables displaying clear button.
+     * <p>
+     * The default value is {@code false}.
+     *
+     * @param visible whether clear button should be shown
+     */
+    public void setClearButtonVisible(boolean visible) {
+        clearButtonVisible = visible;
+
+        updateComponentsVisibility();
+    }
+
+    /**
      * @return aria-label of clear button or {@code null} if not set
      */
     @Nullable
@@ -562,9 +609,9 @@ public abstract class AbstractSingleUploadField<C extends AbstractSingleUploadFi
         }
     }
 
-    protected void updateReadOnly() {
-        upload.setReadOnly(isReadOnly());
+    protected void updateComponentsVisibility() {
         upload.setVisible(!isReadOnly());
-        clearComponent.setVisible(!isReadOnly());
+        fileNameComponent.setVisible(fileNameVisible);
+        clearComponent.setVisible(clearButtonVisible && !isReadOnly() && fileNameVisible);
     }
 }

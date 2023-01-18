@@ -64,6 +64,9 @@ public abstract class AbstractUploadFieldLoader<C extends AbstractSingleUploadFi
         getLoaderSupport().loadResourceString(element, "fileNotSelectedText", context.getMessageGroup(),
                 resultComponent::setFileNotSelectedText);
 
+        getLoaderSupport().loadBoolean(element, "fileNameVisible", resultComponent::setFileNameVisible);
+        getLoaderSupport().loadBoolean(element, "clearButtonVisible", resultComponent::setClearButtonVisible);
+
         loadI18N(resultComponent, element);
     }
 
