@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public interface TaskLifeCycle<T> {
     /**
-     * Publish changes to show progress.
+     * Publishes changes to show progress.
      *
      * @param changes Changes
      * @throws InterruptedException if task was interrupted by calling {@link BackgroundTaskHandler#cancel()}

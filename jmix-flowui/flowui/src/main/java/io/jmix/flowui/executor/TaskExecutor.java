@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 
 public interface TaskExecutor<T, V> {
     /**
-     * Executes background task
+     * Executes background task.
      */
     @ExecutedOnUIThread
     void startExecution();
@@ -33,7 +33,7 @@ public interface TaskExecutor<T, V> {
     boolean cancelExecution();
 
     /**
-     * Joins task thread to current and waits if task is not finished,
+     * Joins task thread to current and waits if task is not finished.
      * @return result of the task
      */
     @ExecutedOnUIThread
@@ -52,7 +52,7 @@ public interface TaskExecutor<T, V> {
     boolean inProgress();
 
     /**
-     * Done handler for clear resources
+     * Sets done handler for clear resources.
      *
      * @param finalizer Runnable handler
      */
@@ -61,7 +61,7 @@ public interface TaskExecutor<T, V> {
     Runnable getFinalizer();
 
     /**
-     * Handle changes from working thread
+     * Handles changes from working thread.
      *
      * @param changes Changes
      */

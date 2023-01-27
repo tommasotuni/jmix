@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Abstract implementation of WatchDog for {@link BackgroundWorker}.
+ * Abstract implementation of {@link WatchDog} for {@link BackgroundWorker}.
  */
 @ThreadSafe
 public abstract class AbstractTasksWatchDog implements WatchDog {
@@ -118,11 +118,6 @@ public abstract class AbstractTasksWatchDog implements WatchDog {
         return watches.size();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param taskHandler Task handler
-     */
     @Override
     public synchronized void manageTask(TaskHandlerImpl taskHandler) {
         watches.add(taskHandler);

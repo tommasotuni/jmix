@@ -36,7 +36,7 @@ public interface BackgroundTaskHandler<V> {
     /**
      * Cancels task.
      *
-     * @return true if canceled, false if the task was not started or is already stopped
+     * @return {@code true} if canceled, {@code false} if the task was not started or is already stopped
      */
     @ExecutedOnUIThread
     boolean cancel();

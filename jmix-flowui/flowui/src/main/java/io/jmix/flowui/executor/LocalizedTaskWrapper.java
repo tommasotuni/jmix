@@ -185,7 +185,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
             this.taskWrapper = taskWrapper;
         }
 
-        public LocalizedTaskWrapper getSource() {
+        public <T, V> LocalizedTaskWrapper<T, V> getSource() {
             return taskWrapper;
         }
     }

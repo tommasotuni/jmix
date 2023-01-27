@@ -48,7 +48,7 @@ public class BackgroundTaskManager {
      *
      * @param task Task
      */
-    public void removeTask(Future task) {
+    public void removeTask(Future<?> task) {
         taskSet.remove(task);
     }
 
@@ -58,7 +58,7 @@ public class BackgroundTaskManager {
     public void cleanupTasks() {
         int count = 0;
         // Stop threads
-        for (Future taskThread : taskSet) {
+        for (Future<?> taskThread : taskSet) {
             if (!taskThread.isDone()) {
                 taskThread.cancel(true);
             }

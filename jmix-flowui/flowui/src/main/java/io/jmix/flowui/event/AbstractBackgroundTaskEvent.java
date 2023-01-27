@@ -20,7 +20,7 @@ import io.jmix.flowui.executor.BackgroundTask;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * Base class for events that contains information about {@link BackgroundTask}.
+ * Base class for events that contain information about {@link BackgroundTask}.
  */
 public abstract class AbstractBackgroundTaskEvent extends ApplicationEvent {
     private BackgroundTask<?, ?> task;

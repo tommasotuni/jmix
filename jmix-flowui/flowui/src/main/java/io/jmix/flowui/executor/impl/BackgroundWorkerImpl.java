@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Implementation of {@link BackgroundWorker}
+ * Implementation of {@link BackgroundWorker}.
  */
 @Component("flowui_BackgroundWorkerImpl")
 public class BackgroundWorkerImpl implements BackgroundWorker {
@@ -183,15 +183,14 @@ public class BackgroundWorkerImpl implements BackgroundWorker {
                 protected void done() {
                     Authentication previousAuth = SecurityContextHelper.getAuthentication();
 
-                    // todo rp do we need set auth?
                     SecurityContextHelper.setAuthentication(authentication);
                     try {
                         TaskExecutorImpl.this.ui.access(() ->
                                 handleDone()
                         );
                     } catch (UIDetachedException e) {
-                        log.debug("Cannot handle Done statement because UI is detached from session. It may be due to" +
-                                " canceling task after session is invalidated");
+                        log.debug("Cannot handle 'Done' statement because UI is detached from session. It may be due " +
+                                "to canceling task after session is invalidated");
                         cancelExecution();
                     } finally {
                         SecurityContextHelper.setAuthentication(previousAuth);
@@ -245,9 +244,7 @@ public class BackgroundWorkerImpl implements BackgroundWorker {
         @SafeVarargs
         @Override
         public final void handleProgress(T... changes) {
-            if (changes.length > 0) {
-                ui.access(() -> process(Arrays.asList(changes)));
-            }
+            ui.access(() -> process(Arrays.asList(changes)));
         }
 
         @ExecutedOnUIThread

@@ -29,14 +29,15 @@ import java.util.concurrent.TimeUnit;
  * Background task for execute by {@link BackgroundWorker}.
  * <br>
  * If the task is associated with a view through "view" constructor parameter, it will be canceled when
- * the view is closed. <br>
+ * the view is closed.
+ * <br>
  * If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
  * <br>
  * Simplest usage example:
  * <pre>
  *    BackgroundTask&lt;Integer, Void&gt; task = new BackgroundTask&lt;Integer, Void&gt;(10, this) {
- *        public Void run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
- *            for (int i = 0; i < 5; i++) {
+ *        public Void run(TaskLifeCycle&lt;Integer&gt; taskLifeCycle) throws Exception {
+ *            for (int i = 0; i &lt; 5; i++) {
  *                TimeUnit.SECONDS.sleep(1);
  *            }
  *            return null;
@@ -59,7 +60,7 @@ public abstract class BackgroundTask<T, V> {
     private final List<ProgressListener<T, V>> progressListeners = Collections.synchronizedList(new ArrayList<>());
 
     /**
-     * Create a task with timeout.
+     * Creates a task with timeout.
      *
      * @param timeout  timeout
      * @param timeUnit timeout time unit
@@ -71,9 +72,9 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Create a task with timeout.
+     * Creates a task with timeout.
      * <p>
-     * The task will not be associated with any window.
+     * The task will not be associated with any {@link View}.
      *
      * @param timeout  timeout
      * @param timeUnit timeout time unit
@@ -84,9 +85,9 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Create a task with timeout in default SECONDS unit.
+     * Creates a task with timeout in default {@link TimeUnit#SECONDS} unit.
      * <br>
-     * The task will not be associated with any window.
+     * The task will not be associated with any {@link View}.
      *
      * @param timeoutSeconds timeout in seconds
      */
@@ -221,7 +222,7 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Remove a progress listener.
+     * Removes a progress listener.
      *
      * @param progressListener listener
      */

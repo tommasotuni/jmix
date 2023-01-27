@@ -22,7 +22,7 @@ import io.jmix.flowui.executor.impl.TaskHandlerImpl;
 public interface WatchDog {
 
     /**
-     * Adds task under WatchDog control.
+     * Adds task under {@link WatchDog} control.
      *
      * @param taskHandler task handler
      */
