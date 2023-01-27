@@ -20,6 +20,8 @@ import javax.annotation.Nullable;
 
 /**
  * Task handler for {@link BackgroundTask}.
+ *
+ * @param <V> type of task's result
  */
 public interface BackgroundTaskHandler<V> {
 

@@ -259,7 +259,6 @@ public abstract class BackgroundTask<T, V> {
         void onCancel();
     }
 
-    // todo rp should be used in dialog
     public static class ProgressListenerAdapter<T, V> implements ProgressListener<T, V> {
 
         @Override

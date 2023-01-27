@@ -16,29 +16,70 @@
 
 package io.jmix.flowui.executor;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dialog.Dialog;
 import io.jmix.core.Messages;
+import io.jmix.core.annotation.Internal;
+import io.jmix.flowui.Notifications;
+import io.jmix.flowui.impl.DialogsImpl;
 import io.jmix.flowui.view.View;
-import io.jmix.flowui.view.ViewControllerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
-// todo rp do we need this?
+/**
+ * INTERNAL!
+ * Supposed to use when showing {@link Dialog} or some {@link View}. For instance
+ * if we need to show some dialog when task is running (e.g. updating the progress).
+ * <p>
+ * See example in {@link DialogsImpl.BackgroundWorkDialogBuilderImpl}.
+ *
+ * @param <T> task progress measurement unit
+ * @param <V> result type
+ */
+@Internal
+@Component("flowui_LocalizedTaskWrapper")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
     private static final Logger log = LoggerFactory.getLogger(BackgroundWorker.class);
 
-    protected BackgroundTask<T, V> wrappedTask;
-    protected View<?> view;
     protected Messages messages;
+    protected Notifications notifications;
 
-    public LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask, View<?> view, Messages messages) {
-        super(wrappedTask.getTimeoutSeconds(), view);
+    protected BackgroundTask<T, V> wrappedTask;
+    protected Consumer<CloseViewContext> closeViewHandler;
+
+    public LocalizedTaskWrapper(BackgroundTask<T, V> wrappedTask) {
+        super(wrappedTask.getTimeoutSeconds());
         this.wrappedTask = wrappedTask;
-        this.view = view;
+    }
+
+    @Autowired
+    public void setMessages(Messages messages) {
         this.messages = messages;
+    }
+
+    @Autowired
+    public void setNotifications(Notifications notifications) {
+        this.notifications = notifications;
+    }
+
+    @Nullable
+    public Consumer<CloseViewContext> getCloseViewHandler() {
+        return closeViewHandler;
+    }
+
+    public void setCloseViewHandler(@Nullable Consumer<CloseViewContext> closeViewHandler) {
+        this.closeViewHandler = closeViewHandler;
     }
 
     @Override
@@ -55,15 +96,9 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     public boolean handleException(Exception ex) {
         boolean handled = wrappedTask.handleException(ex);
 
-        if (handled || wrappedTask.getOwnerView() == null) {
-            // todo rp remove from parent or close somehow?
-//            Screens screens = getScreenContext().getScreens();
-//            screens.remove(view);
-        } else {
-            // todo rp remove from parent or close somehow?
-//            Screens screens = getScreenContext().getScreens();
-//            screens.remove(view);
+        notifyCloseViewHandler();
 
+        if (!handled && wrappedTask.getOwnerView() != null) {
             showExecutionError(ex);
 
             log.error("Exception occurred in background task", ex);
@@ -76,23 +111,17 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     @Override
     public boolean handleTimeoutException() {
         boolean handled = wrappedTask.handleTimeoutException();
-        if (handled || wrappedTask.getOwnerView() == null) {
-            // todo rp remove from parent or close somehow?
-//            Screens screens = getScreenContext().getScreens();
-//            screens.remove(view);
-        } else {
-            // todo rp remove from parent or close somehow?
-//            Screens screens = getScreenContext().getScreens();
-//            screens.remove(view);
 
-            // todo rp get Spring context? Or get somehow notifications
-            /*Notifications notifications = getScreenContext().getNotifications();
+        notifyCloseViewHandler();
 
-            notifications.create(Notifications.NotificationType.WARNING)
-                    .withCaption(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeout"))
-                    .withDescription(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.timeoutMessage"))
-                    .show();*/
-
+        if (!handled && wrappedTask.getOwnerView() != null) {
+            if (UI.getCurrent() != null) {
+                notifications.create(
+                                messages.getMessage("localizedTaskWrapper.timeout.notification.title"),
+                                messages.getMessage("localizedTaskWrapper.timeout.notification.message"))
+                        .withType(Notifications.Type.WARNING)
+                        .show();
+            }
             handled = true;
         }
         return handled;
@@ -100,9 +129,7 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
 
     @Override
     public void done(V result) {
-        // todo rp remove from parent or close somehow?
-//        Screens screens = getScreenContext().getScreens();
-//        screens.remove(view);
+        notifyCloseViewHandler();
 
         try {
             wrappedTask.done(result);
@@ -128,16 +155,38 @@ public class LocalizedTaskWrapper<T, V> extends BackgroundTask<T, V> {
     }
 
     protected void showExecutionError(Exception ex) {
-        View<?> ownerFrame = wrappedTask.getOwnerView();
-        if (ownerFrame != null) {
-            // todo rp implement
-            /*Dialogs dialogs = getScreenContext().getDialogs();
+        View<?> ownerView = wrappedTask.getOwnerView();
+        if (ownerView != null && UI.getCurrent() != null) {
+            notifications.create(messages.getMessage("localizedTaskWrapper.executionError.message"))
+                    .withType(Notifications.Type.ERROR)
+                    .show();
 
+            /* todo ExceptionDialog */
+            /*Dialogs dialogs = Instantiator.get(UI.getCurrent()).getOrCreate(Dialogs.class);
             dialogs.createExceptionDialog()
                     .withThrowable(ex)
-                    .withCaption(messages.getMessage(LocalizedTaskWrapper.class, "backgroundWorkProgress.executionError"))
+                    .withCaption(messages.getMessage("localizedTaskWrapper.executionError.message"))
                     .withMessage(ex.getLocalizedMessage())
                     .show();*/
+        }
+    }
+
+    protected void notifyCloseViewHandler() {
+        if (closeViewHandler != null) {
+            closeViewHandler.accept(new CloseViewContext(this));
+        }
+    }
+
+    public static class CloseViewContext {
+
+        protected LocalizedTaskWrapper taskWrapper;
+
+        public CloseViewContext(LocalizedTaskWrapper taskWrapper) {
+            this.taskWrapper = taskWrapper;
+        }
+
+        public LocalizedTaskWrapper getSource() {
+            return taskWrapper;
         }
     }
 }
