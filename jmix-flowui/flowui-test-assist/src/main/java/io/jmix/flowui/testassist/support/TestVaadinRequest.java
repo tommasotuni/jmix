@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2023 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package test_support.spec
+package io.jmix.flowui.testassist.support;
 
-import io.jmix.flowui.testassist.ViewSpecification
-import org.springframework.test.context.ContextConfiguration
-import test_support.*
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.server.VaadinServletService;
+import org.springframework.mock.web.MockHttpServletRequest;
 
-@ContextConfiguration(classes = [FlowuiTestConfiguration])
-class FlowuiTestSpecification extends ViewSpecification {
+public class TestVaadinRequest extends VaadinServletRequest implements VaadinRequest {
 
-    @Override
-    void setup() {
-        registerScreenBasePackages("test_support.view")
+    public TestVaadinRequest(VaadinServletService vaadinService) {
+        super(new MockHttpServletRequest(), vaadinService);
     }
 }

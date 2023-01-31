@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2023 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package test_support.spec
+apply plugin: 'groovy'
 
-import io.jmix.flowui.testassist.ViewSpecification
-import org.springframework.test.context.ContextConfiguration
-import test_support.*
+group = 'io.jmix.flowui'
+archivesBaseName = 'jmix-flowui-test-assist'
 
-@ContextConfiguration(classes = [FlowuiTestConfiguration])
-class FlowuiTestSpecification extends ViewSpecification {
+dependencies {
+    api project(":flowui")
 
-    @Override
-    void setup() {
-        registerScreenBasePackages("test_support.view")
-    }
+    api 'org.junit.jupiter:junit-jupiter-api'
+    api 'org.junit.jupiter:junit-jupiter-engine'
+    api 'org.springframework.boot:spring-boot-test'
+    api 'org.spockframework:spock-core'
+    api 'org.spockframework:spock-spring'
 }

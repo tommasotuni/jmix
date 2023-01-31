@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-package test_support.spec
+@NonNullApi
+package io.jmix.flowui.testassist.junit;
 
-import io.jmix.flowui.testassist.ViewSpecification
-import org.springframework.test.context.ContextConfiguration
-import test_support.*
-
-@ContextConfiguration(classes = [FlowuiTestConfiguration])
-class FlowuiTestSpecification extends ViewSpecification {
-
-    @Override
-    void setup() {
-        registerScreenBasePackages("test_support.view")
-    }
-}
+import org.springframework.lang.NonNullApi;
