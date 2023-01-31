@@ -25,6 +25,6 @@ class FlowuiTestSpecification extends ViewSpecification {
 
     @Override
     void setup() {
-        registerScreenBasePackages("test_support.view")
+        registerViewBasePackages("test_support.view")
     }
 }

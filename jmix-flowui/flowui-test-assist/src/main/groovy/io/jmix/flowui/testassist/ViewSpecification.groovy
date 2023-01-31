@@ -37,15 +37,14 @@ class ViewSpecification extends FlowuiTestAssistSpecification {
         systemAuthenticator.end()
     }
 
-    // todo rp rename, no "screen" in the class
-    protected <T extends View> T openScreen(Class<T> screen) {
-        def activeRouterTargetsChain = getRouterChain(screen)
+    protected <T extends View> T navigateToView(Class<T> view) {
+        def activeRouterTargetsChain = getRouterChain(view)
 
         activeRouterTargetsChain.get(0) as T
     }
 
-    protected List<HasElement> getRouterChain(Class<View> screenClass) {
-        screenNavigators.view(screenClass)
+    protected List<HasElement> getRouterChain(Class<View> viewClass) {
+        viewNavigators.view(viewClass)
                 .navigate()
 
         UI.getCurrent().getInternals().getActiveRouterTargetsChain()

@@ -50,14 +50,14 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField
 import static org.springframework.web.context.WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE
 
 abstract class FlowuiTestAssistSpecification extends Specification {
+
     private static final String APP_ID = "testFlowuiAppId"
 
     @Autowired
     ApplicationContext applicationContext
 
-    // todo rp rename
     @Autowired
-    ViewNavigators screenNavigators
+    ViewNavigators viewNavigators
 
     @Autowired
     ViewRegistry viewRegistry
@@ -126,8 +126,7 @@ abstract class FlowuiTestAssistSpecification extends Specification {
         UI.setCurrent(ui)
     }
 
-    // todo rp rename
-    protected void registerScreenBasePackages(String[] viewBasePackages) {
+    protected void registerViewBasePackages(String[] viewBasePackages) {
         if (ArrayUtils.isEmpty(viewBasePackages)) {
             return
         }
@@ -155,7 +154,7 @@ abstract class FlowuiTestAssistSpecification extends Specification {
             getDeclaredField(ViewRegistry.class, "initialized", true)
                     .set(viewRegistry, false)
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Cannot register screen packages", e)
+            throw new RuntimeException("Cannot register view base packages", e)
         }
 
         registerViewRoutes(viewBasePackages)
@@ -189,8 +188,8 @@ abstract class FlowuiTestAssistSpecification extends Specification {
         })
     }
 
-    protected boolean isClassInPackages(String classPackage, String[] screenBasePackages) {
-        return screenBasePackages.findAll {classPackage.startsWith(it)}.size() > 0
+    protected boolean isClassInPackages(String classPackage, String[] viewBasePackages) {
+        return viewBasePackages.findAll {classPackage.startsWith(it)}.size() > 0
     }
 
     protected void resetViewRegistry() {
