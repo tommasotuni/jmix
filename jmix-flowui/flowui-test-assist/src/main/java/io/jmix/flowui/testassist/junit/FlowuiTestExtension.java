@@ -179,7 +179,9 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
     @Override
     public void afterEach(ExtensionContext context) throws Exception {
         removeAuthentication(context);
-        resetViewRegistry(context);
+
+        // Do not remove View configurations from ViewRegistry,
+        // because they are initialized only once.
     }
 
     protected void setupVaadin(ExtensionContext context) {
@@ -275,6 +277,8 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
             throw new RuntimeException("Cannot register view packages", e);
         }
 
+        getStore(context).put(VIEW_PACKAGES, viewBasePackages);
+
         registerViewRoutes(viewBasePackages, context);
     }
 
@@ -311,8 +315,8 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
         }
     }
 
-    protected boolean isClassInPackages(String classPackage, String[] screenBasePackages) {
-        return Arrays.stream(screenBasePackages).anyMatch(classPackage::startsWith);
+    protected boolean isClassInPackages(String classPackage, String[] viewBasePackages) {
+        return Arrays.stream(viewBasePackages).anyMatch(classPackage::startsWith);
     }
 
     protected void setupAuthentication(ExtensionContext context) {
@@ -328,27 +332,6 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
             testAuthenticator.removeAuthentication(getApplicationContext(context));
         } else {
             getApplicationContext(context).getBean(SystemAuthenticator.class).end();
-        }
-    }
-
-    protected void resetViewRegistry(ExtensionContext context) {
-        try {
-            Field configurationsField = getDeclaredField(ViewRegistry.class,
-                    "configurations", true);
-
-            ViewRegistry viewRegistry = getApplicationContext(context).getBean(ViewRegistry.class);
-
-            //noinspection unchecked
-            Collection<ViewControllersConfiguration> configurations =
-                    (Collection<ViewControllersConfiguration>) configurationsField.get(viewRegistry);
-            configurations.clear();
-
-            configurationsField.set(viewRegistry, configurations);
-
-            getDeclaredField(ViewRegistry.class, "initialized", true)
-                    .set(viewRegistry, false);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Cannot register screen packages", e);
         }
     }
 
