@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * If the task is associated with a view through "view" constructor parameter, it will be canceled when
  * the view is closed.
  * <br>
- * If timeout passed to constructor is exceeded, the task is canceled by special {@link WatchDog} thread.
+ * If timeout passed to constructor is exceeded, the task is canceled by special {@link BackgroundTaskWatchDog} thread.
  * <br>
  * Simplest usage example:
  * <pre>

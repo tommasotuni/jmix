@@ -19,10 +19,10 @@ package io.jmix.flowui.executor;
 import io.jmix.flowui.executor.impl.TaskHandlerImpl;
 
 @SuppressWarnings("unused")
-public interface WatchDog {
+public interface BackgroundTaskWatchDog {
 
     /**
-     * Adds task under {@link WatchDog} control.
+     * Adds task under {@link BackgroundTaskWatchDog} control.
      *
      * @param taskHandler task handler
      */

@@ -25,7 +25,7 @@ import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.core.security.SecurityContextHelper;
 import io.jmix.flowui.event.BackgroundTaskUnhandledExceptionEvent;
 import io.jmix.flowui.executor.*;
-import io.jmix.flowui.executor.WatchDog;
+import io.jmix.flowui.executor.BackgroundTaskWatchDog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class BackgroundWorkerImpl implements BackgroundWorker {
     private static final Pattern THREAD_NAME_PATTERN = Pattern.compile("BackgroundTask-([0-9]+)");
 
     @Autowired
-    protected WatchDog watchDog;
+    protected BackgroundTaskWatchDog backgroundTaskWatchDog;
     @Autowired
     protected CurrentAuthentication currentAuthentication;
     @Autowired
@@ -124,7 +124,8 @@ public class BackgroundWorkerImpl implements BackgroundWorker {
 
         // create task handler
         TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(
-                getUIAccessor(), taskExecutor, watchDog, applicationEventPublisher, currentAuthentication.getUser(), timeSource);
+                getUIAccessor(), taskExecutor, backgroundTaskWatchDog, applicationEventPublisher,
+                currentAuthentication.getUser(), timeSource);
         taskExecutor.setTaskHandler(taskHandler);
 
         return taskHandler;
@@ -355,7 +356,7 @@ public class BackgroundWorkerImpl implements BackgroundWorker {
             log.trace("Unregister task");
 
             taskManager.removeTask(future);
-            watchDog.removeTask(taskHandler);
+            backgroundTaskWatchDog.removeTask(taskHandler);
         }
 
         @ExecutedOnUIThread

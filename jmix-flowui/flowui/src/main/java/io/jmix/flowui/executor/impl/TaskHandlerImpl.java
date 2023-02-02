@@ -21,7 +21,7 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.core.TimeSource;
 import io.jmix.flowui.event.BackgroundTaskTimeoutEvent;
 import io.jmix.flowui.executor.*;
-import io.jmix.flowui.executor.WatchDog;
+import io.jmix.flowui.executor.BackgroundTaskWatchDog;
 import io.jmix.flowui.view.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private UIAccessor uiAccessor;
     private final TaskExecutor<T, V> taskExecutor;
-    private final WatchDog watchDog;
+    private final BackgroundTaskWatchDog backgroundTaskWatchDog;
     private ApplicationEventPublisher applicationEventPublisher;
     private TimeSource timeSource;
 
@@ -52,13 +52,13 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     public TaskHandlerImpl(UIAccessor uiAccessor,
                            TaskExecutor<T, V> taskExecutor,
-                           WatchDog watchDog,
+                           BackgroundTaskWatchDog backgroundTaskWatchDog,
                            ApplicationEventPublisher applicationEventPublisher,
                            UserDetails user,
                            TimeSource timeSource) {
         this.uiAccessor = uiAccessor;
         this.taskExecutor = taskExecutor;
-        this.watchDog = watchDog;
+        this.backgroundTaskWatchDog = backgroundTaskWatchDog;
         this.applicationEventPublisher = applicationEventPublisher;
         this.timeSource = timeSource;
 
@@ -97,7 +97,7 @@ public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
         this.startTimeStamp = timeSource.currentTimestamp().getTime();
 
-        this.watchDog.manageTask(this);
+        this.backgroundTaskWatchDog.manageTask(this);
 
         log.trace("Run task: {}. User: {}", taskExecutor.getTask(), user.getUsername());
 

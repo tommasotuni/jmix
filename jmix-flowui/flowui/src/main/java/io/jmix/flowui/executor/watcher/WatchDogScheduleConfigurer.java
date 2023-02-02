@@ -17,7 +17,7 @@
 package io.jmix.flowui.executor.watcher;
 
 import io.jmix.flowui.executor.FlowuiBackgroundTaskProperties;
-import io.jmix.flowui.executor.WatchDog;
+import io.jmix.flowui.executor.BackgroundTaskWatchDog;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -29,22 +29,22 @@ public class WatchDogScheduleConfigurer {
 
     private TaskScheduler taskScheduler;
 
-    private WatchDog watchDog;
+    private BackgroundTaskWatchDog backgroundTaskWatchDog;
 
     private FlowuiBackgroundTaskProperties backgroundTaskProperties;
 
     public WatchDogScheduleConfigurer(@Qualifier("flowui_ThreadPoolTaskScheduler") TaskScheduler taskScheduler,
-                                      WatchDog watchDog,
+                                      BackgroundTaskWatchDog backgroundTaskWatchDog,
                                       FlowuiBackgroundTaskProperties backgroundTaskProperties) {
         this.taskScheduler = taskScheduler;
-        this.watchDog = watchDog;
+        this.backgroundTaskWatchDog = backgroundTaskWatchDog;
         this.backgroundTaskProperties = backgroundTaskProperties;
     }
 
     @EventListener
     public void onContextRefreshedEvent(ContextRefreshedEvent event) {
         taskScheduler.scheduleWithFixedDelay(
-                () -> watchDog.cleanupTasks(),
+                () -> backgroundTaskWatchDog.cleanupTasks(),
                 backgroundTaskProperties.getTimeoutCheckInterval());
     }
 }

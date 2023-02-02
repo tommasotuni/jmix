@@ -26,7 +26,7 @@ public interface TaskExecutor<T, V> {
     void startExecution();
 
     /**
-     * Cancels the execution and removes task form {@link WatchDog} and from {@link BackgroundTaskManager}.
+     * Cancels the execution and removes task form {@link BackgroundTaskWatchDog} and from {@link BackgroundTaskManager}.
      * @return {@code true} if the canceling was successful
      */
     @ExecutedOnUIThread

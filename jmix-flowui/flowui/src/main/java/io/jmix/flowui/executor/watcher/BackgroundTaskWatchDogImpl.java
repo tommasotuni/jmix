@@ -18,10 +18,12 @@ package io.jmix.flowui.executor.watcher;
 
 import io.jmix.core.TimeSource;
 import io.jmix.flowui.executor.BackgroundWorker;
-import io.jmix.flowui.executor.WatchDog;
+import io.jmix.flowui.executor.FlowuiBackgroundTaskProperties;
+import io.jmix.flowui.executor.BackgroundTaskWatchDog;
 import io.jmix.flowui.executor.impl.TaskHandlerImpl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
@@ -32,26 +34,32 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Abstract implementation of {@link WatchDog} for {@link BackgroundWorker}.
+ * Implementation of {@link BackgroundTaskWatchDog} for {@link BackgroundWorker}.
  */
 @ThreadSafe
-public abstract class AbstractTasksWatchDog implements WatchDog {
+public class BackgroundTaskWatchDogImpl implements BackgroundTaskWatchDog {
+    private static final Logger log = LoggerFactory.getLogger(BackgroundTaskWatchDogImpl.class);
+
     public enum ExecutionStatus {
         NORMAL,
         TIMEOUT_EXCEEDED,
         SHOULD_BE_KILLED
     }
 
-    @Autowired
     protected TimeSource timeSource;
+    protected FlowuiBackgroundTaskProperties properties;
 
     private final Set<TaskHandlerImpl> watches = new LinkedHashSet<>();
 
     protected volatile boolean initialized;
 
-    public AbstractTasksWatchDog() {
+    public BackgroundTaskWatchDogImpl(FlowuiBackgroundTaskProperties properties,
+                                      TimeSource timeSource) {
+        this.properties = properties;
+        this.timeSource = timeSource;
     }
 
     @EventListener(classes = {ContextRefreshedEvent.class, ContextStartedEvent.class})
@@ -101,8 +109,6 @@ public abstract class AbstractTasksWatchDog implements WatchDog {
         watches.removeAll(forRemove);
     }
 
-    protected abstract ExecutionStatus getExecutionStatus(long actualTimeMs, TaskHandlerImpl taskHandler);
-
     @Override
     public synchronized void stopTasks() {
         // copy watches since task.kill tries to remove task handler from watches
@@ -126,5 +132,27 @@ public abstract class AbstractTasksWatchDog implements WatchDog {
     @Override
     public synchronized void removeTask(TaskHandlerImpl taskHandler) {
         watches.remove(taskHandler);
+    }
+
+    protected ExecutionStatus getExecutionStatus(long actualTimeMs, TaskHandlerImpl taskHandler) {
+        long timeout = taskHandler.getTimeoutMs();
+
+        // kill tasks, which do not update status for latency milliseconds
+        long latencyMs = TimeUnit.SECONDS.toMillis(properties.getLatencyTimeoutSeconds());
+        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout + latencyMs) {
+            if (log.isTraceEnabled()) {
+                log.trace("Latency timeout exceeded for task: {}", taskHandler.getTask());
+            }
+            return ExecutionStatus.SHOULD_BE_KILLED;
+        }
+
+        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {
+            if (log.isTraceEnabled()) {
+                log.trace("Timeout exceeded for task: {}", taskHandler.getTask());
+            }
+            return ExecutionStatus.TIMEOUT_EXCEEDED;
+        }
+
+        return ExecutionStatus.NORMAL;
     }
 }
