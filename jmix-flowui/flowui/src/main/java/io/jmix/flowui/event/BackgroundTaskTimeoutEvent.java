@@ -16,7 +16,7 @@
 
 package io.jmix.flowui.event;
 
-import io.jmix.flowui.executor.BackgroundTask;
+import io.jmix.flowui.backgroundtask.BackgroundTask;
 
 /**
  * Event is published if the task does not handle timeout in {@link BackgroundTask#handleTimeoutException()}.

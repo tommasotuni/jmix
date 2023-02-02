@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor.watcher;
+package io.jmix.flowui.backgroundtask.impl;
 
 import io.jmix.core.TimeSource;
-import io.jmix.flowui.executor.BackgroundWorker;
-import io.jmix.flowui.executor.FlowuiBackgroundTaskProperties;
-import io.jmix.flowui.executor.BackgroundTaskWatchDog;
-import io.jmix.flowui.executor.impl.TaskHandlerImpl;
+import io.jmix.flowui.backgroundtask.BackgroundWorker;
+import io.jmix.flowui.backgroundtask.FlowuiBackgroundTaskProperties;
+import io.jmix.flowui.backgroundtask.BackgroundTaskWatchDog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +137,7 @@ public class BackgroundTaskWatchDogImpl implements BackgroundTaskWatchDog {
         long timeout = taskHandler.getTimeoutMs();
 
         // kill tasks, which do not update status for latency milliseconds
-        long latencyMs = TimeUnit.SECONDS.toMillis(properties.getLatencyTimeoutSeconds());
+        long latencyMs = properties.getTaskKillingLatency().toMillis();
         if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout + latencyMs) {
             if (log.isTraceEnabled()) {
                 log.trace("Latency timeout exceeded for task: {}", taskHandler.getTask());

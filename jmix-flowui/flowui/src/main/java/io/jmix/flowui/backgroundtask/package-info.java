@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Haulmont.
+ * Copyright 2020 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor;
+@NonNullApi
+package io.jmix.flowui.backgroundtask;
 
-/**
- * Exception that is thrown in case of incorrect access to a shared data from a thread that does not own necessary lock.
- */
-public class IllegalConcurrentAccessException extends RuntimeException {
-    public IllegalConcurrentAccessException() {
-        super("UI Shared state was accessed from a background thread");
-    }
-
-    public IllegalConcurrentAccessException(String message) {
-        super(message);
-    }
-}
+import org.springframework.lang.NonNullApi;

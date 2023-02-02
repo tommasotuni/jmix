@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor.impl;
+package io.jmix.flowui.backgroundtask.impl;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.vaadin.flow.component.UI;
@@ -24,8 +24,8 @@ import io.jmix.core.TimeSource;
 import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.core.security.SecurityContextHelper;
 import io.jmix.flowui.event.BackgroundTaskUnhandledExceptionEvent;
-import io.jmix.flowui.executor.*;
-import io.jmix.flowui.executor.BackgroundTaskWatchDog;
+import io.jmix.flowui.backgroundtask.*;
+import io.jmix.flowui.backgroundtask.BackgroundTaskWatchDog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

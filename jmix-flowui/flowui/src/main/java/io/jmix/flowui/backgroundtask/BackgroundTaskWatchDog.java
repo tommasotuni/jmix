@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor;
+package io.jmix.flowui.backgroundtask;
 
-import io.jmix.flowui.executor.impl.TaskHandlerImpl;
+import io.jmix.flowui.backgroundtask.impl.TaskHandlerImpl;
 
 @SuppressWarnings("unused")
 public interface BackgroundTaskWatchDog {

@@ -17,9 +17,9 @@
 package io.jmix.flowui;
 
 import io.jmix.core.TimeSource;
-import io.jmix.flowui.executor.FlowuiBackgroundTaskProperties;
-import io.jmix.flowui.executor.BackgroundTaskWatchDog;
-import io.jmix.flowui.executor.watcher.BackgroundTaskWatchDogImpl;
+import io.jmix.flowui.backgroundtask.FlowuiBackgroundTaskProperties;
+import io.jmix.flowui.backgroundtask.BackgroundTaskWatchDog;
+import io.jmix.flowui.backgroundtask.impl.BackgroundTaskWatchDogImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;

@@ -42,7 +42,7 @@ import io.jmix.flowui.app.inputdialog.DialogActions;
 import io.jmix.flowui.app.inputdialog.InputDialog;
 import io.jmix.flowui.app.inputdialog.InputParameter;
 import io.jmix.flowui.component.validation.ValidationErrors;
-import io.jmix.flowui.executor.*;
+import io.jmix.flowui.backgroundtask.*;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.KeyCombination;
 import io.jmix.flowui.view.DialogWindow;

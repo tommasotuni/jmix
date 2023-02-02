@@ -24,7 +24,7 @@ import io.jmix.flowui.app.inputdialog.DialogActions;
 import io.jmix.flowui.app.inputdialog.InputDialog;
 import io.jmix.flowui.app.inputdialog.InputParameter;
 import io.jmix.flowui.component.validation.ValidationErrors;
-import io.jmix.flowui.executor.BackgroundTask;
+import io.jmix.flowui.backgroundtask.BackgroundTask;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.view.DialogWindow;
 import io.jmix.flowui.view.View;
@@ -374,7 +374,7 @@ public interface Dialogs {
         /**
          * Sets amount of items to be processed by background task.
          * <br>
-         * Use {@link io.jmix.flowui.executor.TaskLifeCycle#publish(Object[])} to notify the dialog about progress
+         * Use {@link io.jmix.flowui.backgroundtask.TaskLifeCycle#publish(Object[])} to notify the dialog about progress
          * completion.
          *
          * @param total amount of items to be processed by background task,

@@ -27,7 +27,7 @@ import io.jmix.core.CoreProperties;
 import io.jmix.core.LocaleResolver;
 import io.jmix.flowui.component.error.JmixInternalServerError;
 import io.jmix.flowui.exception.UiExceptionHandlers;
-import io.jmix.flowui.executor.BackgroundTaskManager;
+import io.jmix.flowui.backgroundtask.BackgroundTaskManager;
 import io.jmix.flowui.view.ViewRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

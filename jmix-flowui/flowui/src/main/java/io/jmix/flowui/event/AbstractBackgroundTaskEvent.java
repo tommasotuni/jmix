@@ -16,7 +16,7 @@
 
 package io.jmix.flowui.event;
 
-import io.jmix.flowui.executor.BackgroundTask;
+import io.jmix.flowui.backgroundtask.BackgroundTask;
 import org.springframework.context.ApplicationEvent;
 
 /**

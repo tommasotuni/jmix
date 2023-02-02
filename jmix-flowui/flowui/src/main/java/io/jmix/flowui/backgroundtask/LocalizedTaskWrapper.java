@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor;
+package io.jmix.flowui.backgroundtask;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dialog.Dialog;

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor.watcher;
+package io.jmix.flowui.backgroundtask;
 
-import io.jmix.flowui.executor.FlowuiBackgroundTaskProperties;
-import io.jmix.flowui.executor.BackgroundTaskWatchDog;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-@Component("ui_WatchDogScheduleConfigurer")
-public class WatchDogScheduleConfigurer {
+@Component("flowui_BackgroundTaskWatchDogScheduleConfigurer")
+public class BackgroundTaskWatchDogScheduleConfigurer {
 
     private TaskScheduler taskScheduler;
 
@@ -33,9 +31,9 @@ public class WatchDogScheduleConfigurer {
 
     private FlowuiBackgroundTaskProperties backgroundTaskProperties;
 
-    public WatchDogScheduleConfigurer(@Qualifier("flowui_ThreadPoolTaskScheduler") TaskScheduler taskScheduler,
-                                      BackgroundTaskWatchDog backgroundTaskWatchDog,
-                                      FlowuiBackgroundTaskProperties backgroundTaskProperties) {
+    public BackgroundTaskWatchDogScheduleConfigurer(@Qualifier("flowui_ThreadPoolTaskScheduler") TaskScheduler taskScheduler,
+                                                    BackgroundTaskWatchDog backgroundTaskWatchDog,
+                                                    FlowuiBackgroundTaskProperties backgroundTaskProperties) {
         this.taskScheduler = taskScheduler;
         this.backgroundTaskWatchDog = backgroundTaskWatchDog;
         this.backgroundTaskProperties = backgroundTaskProperties;
@@ -45,6 +43,6 @@ public class WatchDogScheduleConfigurer {
     public void onContextRefreshedEvent(ContextRefreshedEvent event) {
         taskScheduler.scheduleWithFixedDelay(
                 () -> backgroundTaskWatchDog.cleanupTasks(),
-                backgroundTaskProperties.getTimeoutCheckInterval());
+                backgroundTaskProperties.getTimeoutExpirationCheckInterval());
     }
 }

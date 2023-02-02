@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor.impl;
+package io.jmix.flowui.backgroundtask.impl;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.TimeSource;
 import io.jmix.flowui.event.BackgroundTaskTimeoutEvent;
-import io.jmix.flowui.executor.*;
-import io.jmix.flowui.executor.BackgroundTaskWatchDog;
+import io.jmix.flowui.backgroundtask.*;
+import io.jmix.flowui.backgroundtask.BackgroundTaskWatchDog;
 import io.jmix.flowui.view.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

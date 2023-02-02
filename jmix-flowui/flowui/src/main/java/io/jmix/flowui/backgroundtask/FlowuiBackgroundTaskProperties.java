@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.executor;
+package io.jmix.flowui.backgroundtask;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.convert.DurationUnit;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @ConfigurationProperties(prefix = "jmix.flowui.background-task")
 @ConstructorBinding
@@ -31,22 +35,24 @@ public class FlowuiBackgroundTaskProperties {
 
     /**
      * Tasks that do not update their status are killed after the timeout (task's timeout plus latency timout).
+     * If a duration suffix is not specified, seconds will be used.
      */
-    int latencyTimeoutSeconds;
+    Duration taskKillingLatency;
 
     /**
-     * Interval for checking timeout of the {@link BackgroundTask} in ms.
+     * Interval for checking timeout of the {@link BackgroundTask}. If a duration suffix is not specified,
+     * milliseconds will be used.
      */
-    long timeoutCheckInterval;
+    Duration timeoutExpirationCheckInterval;
 
     public FlowuiBackgroundTaskProperties(
             @DefaultValue("10") int threadsCount,
-            @DefaultValue("60") int latencyTimeoutSeconds,
-            @DefaultValue("5000") long timeoutCheckInterval
+            @DefaultValue("60") @DurationUnit(ChronoUnit.SECONDS) Duration taskKillingLatency,
+            @DefaultValue("5000") Duration timeoutExpirationCheckInterval
     ) {
         this.threadsCount = threadsCount;
-        this.latencyTimeoutSeconds = latencyTimeoutSeconds;
-        this.timeoutCheckInterval = timeoutCheckInterval;
+        this.taskKillingLatency = taskKillingLatency;
+        this.timeoutExpirationCheckInterval = timeoutExpirationCheckInterval;
     }
 
     /**
@@ -57,16 +63,16 @@ public class FlowuiBackgroundTaskProperties {
     }
 
     /**
-     * @see #latencyTimeoutSeconds
+     * @see #taskKillingLatency
      */
-    public int getLatencyTimeoutSeconds() {
-        return latencyTimeoutSeconds;
+    public Duration getTaskKillingLatency() {
+        return taskKillingLatency;
     }
 
     /**
-     * @see #timeoutCheckInterval
+     * @see #timeoutExpirationCheckInterval
      */
-    public long getTimeoutCheckInterval() {
-        return timeoutCheckInterval;
+    public Duration getTimeoutExpirationCheckInterval() {
+        return timeoutExpirationCheckInterval;
     }
 }
