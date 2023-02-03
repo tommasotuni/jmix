@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.support;
+package io.jmix.flowui.testassist;
 
 import io.jmix.core.JmixOrder;
-import io.jmix.flowui.exception.UiExceptionHandler;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 
-@Order(JmixOrder.LOWEST_PRECEDENCE - 50)
-@Component("test_assist_TestAssistExceptionHandler")
-public class TestAssistExceptionHandler implements UiExceptionHandler {
+@Configuration
+public class TestAssistConfiguration {
 
-    @Override
-    public boolean handle(Throwable exception) {
-        // Any exception thrown from application are handled by UiExceptionHandlers bean.
-        // However, the test in which exception was thrown considered as passed. So
-        // throw exception to fail the test.
-        throw new IllegalStateException("Exception occurred during the test", exception);
+    @Bean("testassist_TestAssistExceptionHandler")
+    @Order(JmixOrder.LOWEST_PRECEDENCE - 90)
+    public TestAssistExceptionHandler testAssistExceptionHandler() {
+        return new TestAssistExceptionHandler();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Haulmont.
+ * Copyright 2022 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.support;
+@NonNullApi
+package io.jmix.flowui.testassist.vaadin;
 
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.spring.SpringVaadinSession;
-
-public class TestVaadinSession extends SpringVaadinSession {
-
-    public TestVaadinSession(VaadinService service) {
-        super(service);
-    }
-
-    @Override
-    public boolean hasLock() {
-        return true;
-    }
-
-    @Override
-    public void lock() {
-        // do nothing
-    }
-
-    @Override
-    public void unlock() {
-        // do nothing
-    }
-}
+import org.springframework.lang.NonNullApi;

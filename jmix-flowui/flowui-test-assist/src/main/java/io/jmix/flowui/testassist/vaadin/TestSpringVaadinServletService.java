@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.support;
+package io.jmix.flowui.testassist.vaadin;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinServlet;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.support;
+package io.jmix.flowui.testassist.vaadin;
 
 import org.springframework.mock.web.MockServletContext;
 
