@@ -21,18 +21,18 @@ import org.springframework.context.ApplicationContext;
 /**
  * Interface to be implemented by classes for managing application authentication.
  * <p>
- * To provide global implementation for all test classes with {@link FlowuiTestExtension} create a spring bean
+ * To provide global implementation for all test classes with {@link JmixUiTestExtension} create a spring bean
  * that implements this interface. Before all tests extension will get bean from the context and
  * will use it for setting/removing authentication.
  * <p>
- * To provide implementation only for concrete test class with {@link FlowuiTestExtension} create a class with default
+ * To provide implementation only for concrete test class with {@link JmixUiTestExtension} create a class with default
  * constructor that implements this interface. To set implementation use
- * {@link FlowuiTestExtension#withTestAuthenticator(TestAuthenticator)} or {@link FlowuiTest#authenticator()}.
+ * {@link JmixUiTestExtension#withTestAuthenticator(UiTestAuthenticator)} or {@link UiTest#authenticator()}.
  *
- * @see FlowuiTestExtension
- * @see FlowuiTest
+ * @see JmixUiTestExtension
+ * @see UiTest
  */
-public interface TestAuthenticator {
+public interface UiTestAuthenticator {
 
     /**
      * Invoked before each test.

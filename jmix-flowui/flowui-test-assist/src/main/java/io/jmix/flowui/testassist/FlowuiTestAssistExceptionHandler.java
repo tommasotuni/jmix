@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package test_support;
+package io.jmix.flowui.testassist;
 
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinServletRequest;
-import com.vaadin.flow.server.VaadinServletService;
-import org.springframework.mock.web.MockHttpServletRequest;
+import io.jmix.flowui.exception.UiExceptionHandler;
 
-public class TestVaadinRequest extends VaadinServletRequest implements VaadinRequest {
+public class FlowuiTestAssistExceptionHandler implements UiExceptionHandler {
 
-    public TestVaadinRequest(VaadinServletService vaadinService) {
-        super(new MockHttpServletRequest(), vaadinService);
+    @Override
+    public boolean handle(Throwable exception) {
+        // Exception can be thrown while navigation is performing. However,
+        // this exception is not propagated and test considered as passed.
+        // So we should propagate the exception to fail the test.
+        throw (RuntimeException) exception;
     }
 }

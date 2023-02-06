@@ -27,28 +27,35 @@ import java.lang.annotation.*;
  * <p>
  * Base example:
  * <pre>
- * &#64;FlowuiTest(authenticator = CustomTestAuthenticator.class)
- * &#64;ExtendWith({SpringExtension.class, FlowuiTestExtension.class})
- * &#64;SpringBootTest
- * public class FlowJunitTest {
+ * &#64;UiTest
+ * &#64;SpringBootTest(classes = {DemoApplication.class, FlowuiTestAssistConfiguration.class})
+ * public class UserViewsTest {
  *     &#64;Autowired
  *     private ViewNavigators viewNavigators;
  *
  *     &#64;Test
- *     public void testOrderView() {
- *         viewNavigators.view(OrderListView.class)
+ *     public void navigateToUserListView() {
+ *         viewNavigators.view(UserListView.class)
  *                 .navigate();
+ *
+ *         UserListView view = TestViewsHelper.getCurrentView();
+ *
+ *         CollectionContainer<User> usersDc = ViewControllerUtils.getViewData(view)
+ *                 .getContainer("usersDc");
+ *
+ *         Assertions.assertTrue(usersDc.getItems().size() > 0);
  *     }
  * }
  * </pre>
- * @see FlowuiTestExtension
+ *
+ * @see JmixUiTestExtension
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@ExtendWith({SpringExtension.class, FlowuiTestExtension.class})
+@ExtendWith({SpringExtension.class, JmixUiTestExtension.class})
 @Documented
 @Inherited
-public @interface FlowuiTest {
+public @interface UiTest {
 
     /**
      * Views under these packages will be available in test.
@@ -64,13 +71,13 @@ public @interface FlowuiTest {
      * <p>
      * By default, for authentication is used {@link SystemAuthenticator}.
      *
-     * @return class that implement {@link TestAuthenticator}
+     * @return class that implement {@link UiTestAuthenticator}
      */
-    Class<? extends TestAuthenticator> authenticator() default NoopAuthenticator.class;
+    Class<? extends UiTestAuthenticator> authenticator() default DefaultUiTestAuthenticator.class;
 
     /**
-     * Dummy class.
+     * Dummy class. By default, the {@link JmixUiTestExtension} will use {@link SystemAuthenticator}.
      */
-    abstract class NoopAuthenticator implements TestAuthenticator {
+    abstract class DefaultUiTestAuthenticator implements UiTestAuthenticator {
     }
 }

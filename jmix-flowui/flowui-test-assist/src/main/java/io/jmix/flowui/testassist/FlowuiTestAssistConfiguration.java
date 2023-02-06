@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-package test_support;
+package io.jmix.flowui.testassist;
 
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.spring.SpringVaadinSession;
+import io.jmix.core.JmixOrder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
-public class TestVaadinSession extends SpringVaadinSession {
+@Configuration
+public class FlowuiTestAssistConfiguration {
 
-    public TestVaadinSession(VaadinService service) {
-        super(service);
-    }
-
-    @Override
-    public boolean hasLock() {
-        return true;
-    }
-
-    @Override
-    public void lock() {
-        // do nothing
-    }
-
-    @Override
-    public void unlock() {
-        // do nothing
+    @Bean("testassist_TestAssistExceptionHandler")
+    @Order(JmixOrder.LOWEST_PRECEDENCE - 90)
+    public FlowuiTestAssistExceptionHandler testAssistExceptionHandler() {
+        return new FlowuiTestAssistExceptionHandler();
     }
 }

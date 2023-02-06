@@ -63,47 +63,36 @@ import static org.springframework.web.context.WebApplicationContext.ROOT_WEB_APP
  * <p>
  * For instance:
  * <pre>
- * &#64;ExtendWith(SpringExtension.class)
- * &#64;SpringBootTest
- * public class FlowJunitTest {
+ * &#64;SpringBootTest(classes = {TestAssistApplication.class, FlowuiTestAssistConfiguration.class})
+ * public class UserViewsTest {
  *
  *     &#64;RegisterExtension
- *     private FlowuiTestExtension extension = new FlowuiTestExtension()
- *             .withTestAuthenticator(new TestAppAuthenticator());
+ *     private JmixUiTestExtension extension = new JmixUiTestExtension();
  *
  *     &#64;Autowired
  *     private ViewNavigators viewNavigators;
  *
  *     &#64;Test
- *     public void testOrderView() {
- *         viewNavigators.view(OrderListView.class)
+ *     public void navigateToUserListView() {
+ *         viewNavigators.view(UserListView.class)
  *                 .navigate();
+ *
+ *         UserListView view = ViewsHelper.getCurrentView();
+ *
+ *         CollectionContainer<User> usersDc = ViewControllerUtils.getViewData(view)
+ *                 .getContainer("usersDc");
+ *
+ *         Assertions.assertTrue(usersDc.getItems().size() > 0);
  *     }
  * }
  * </pre>
- * For annotation based approach use {@link FlowuiTest} annotation to configure the extension:
- * <pre>
- * &#64;FlowuiTest(authenticator = TestAppAuthenticator.class)
- * &#64;ExtendWith({SpringExtension.class, FlowuiTestExtension.class})
- * &#64;SpringBootTest
- * public class FlowJunitTest {
- *
- *     &#64;Autowired
- *     private ViewNavigators viewNavigators;
- *
- *     &#64;Test
- *     public void testOrderView() {
- *         viewNavigators.view(OrderListView.class)
- *                 .navigate();
- *     }
- * }
- * </pre>
+ * For annotation based approach use {@link UiTest} annotation to configure the extension.
  */
-public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback {
+public class JmixUiTestExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback {
 
-    private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(FlowuiTestExtension.class);
+    private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(JmixUiTestExtension.class);
 
-    private static final String APP_ID = "testFlowuiAppId";
+    private static final String APP_ID = "testJmixUiAppId";
 
     public static final String VIEW_PACKAGES = "viewPackages";
 
@@ -113,7 +102,7 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
     protected VaadinSession vaadinSession;
     protected UI ui;
 
-    protected TestAuthenticator testAuthenticator;
+    protected UiTestAuthenticator uiTestAuthenticator;
 
     /**
      * @return view base packages or {@code null} if not set
@@ -131,7 +120,7 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
      * @param viewBasePackages view base packages
      * @return current instance of extension
      */
-    public FlowuiTestExtension withViewBasePackages(@Nullable String... viewBasePackages) {
+    public JmixUiTestExtension withViewBasePackages(@Nullable String... viewBasePackages) {
         this.viewBasePackages = viewBasePackages;
         return this;
     }
@@ -140,31 +129,31 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
      * @return authenticator or {@code null} if not set
      */
     @Nullable
-    public TestAuthenticator getTestAuthenticator() {
-        return testAuthenticator;
+    public UiTestAuthenticator getTestAuthenticator() {
+        return uiTestAuthenticator;
     }
 
     /**
      * Sets authentication management provider that will be used in tests before/after each test.
      * <p>
-     * Provided authenticator will override a bean implementing {@link TestAuthenticator} for the test class.
+     * Provided authenticator will override a bean implementing {@link UiTestAuthenticator} for the test class.
      *
-     * @param testAuthenticator authenticator to set
+     * @param uiTestAuthenticator authenticator to set
      * @return current instance of extension
-     * @see TestAuthenticator
+     * @see UiTestAuthenticator
      */
-    public FlowuiTestExtension withTestAuthenticator(@Nullable TestAuthenticator testAuthenticator) {
-        this.testAuthenticator = testAuthenticator;
+    public JmixUiTestExtension withTestAuthenticator(@Nullable UiTestAuthenticator uiTestAuthenticator) {
+        this.uiTestAuthenticator = uiTestAuthenticator;
         return this;
     }
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        if (testAuthenticator == null) {
-            testAuthenticator = getTestAuthenticatorFromAnnotation(context);
+        if (uiTestAuthenticator == null) {
+            uiTestAuthenticator = getTestAuthenticatorFromAnnotation(context);
         }
-        if (testAuthenticator == null) {
-            testAuthenticator = getApplicationContext(context).getBeanProvider(TestAuthenticator.class)
+        if (uiTestAuthenticator == null) {
+            uiTestAuthenticator = getApplicationContext(context).getBeanProvider(UiTestAuthenticator.class)
                     .getIfAvailable();
         }
     }
@@ -234,8 +223,8 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
         if (ArrayUtils.isNotEmpty(this.viewBasePackages)) {
             viewBasePackages = this.viewBasePackages;
         } else {
-            Optional<FlowuiTest> annotationOpt =
-                    AnnotationSupport.findAnnotation(context.getTestClass(), FlowuiTest.class);
+            Optional<UiTest> annotationOpt =
+                    AnnotationSupport.findAnnotation(context.getTestClass(), UiTest.class);
             if (annotationOpt.isPresent()) {
                 viewBasePackages = annotationOpt.get().viewBasePackages();
             }
@@ -320,41 +309,41 @@ public class FlowuiTestExtension implements BeforeAllCallback, BeforeEachCallbac
     }
 
     protected void setupAuthentication(ExtensionContext context) {
-        if (testAuthenticator != null) {
-            testAuthenticator.setupAuthentication(getApplicationContext(context));
+        if (uiTestAuthenticator != null) {
+            uiTestAuthenticator.setupAuthentication(getApplicationContext(context));
         } else {
             getApplicationContext(context).getBean(SystemAuthenticator.class).begin();
         }
     }
 
     protected void removeAuthentication(ExtensionContext context) {
-        if (testAuthenticator != null) {
-            testAuthenticator.removeAuthentication(getApplicationContext(context));
+        if (uiTestAuthenticator != null) {
+            uiTestAuthenticator.removeAuthentication(getApplicationContext(context));
         } else {
             getApplicationContext(context).getBean(SystemAuthenticator.class).end();
         }
     }
 
     @Nullable
-    protected TestAuthenticator getTestAuthenticatorFromAnnotation(ExtensionContext context) {
-        Optional<FlowuiTest> annotationOpt =
-                AnnotationSupport.findAnnotation(context.getTestClass(), FlowuiTest.class);
+    protected UiTestAuthenticator getTestAuthenticatorFromAnnotation(ExtensionContext context) {
+        Optional<UiTest> annotationOpt =
+                AnnotationSupport.findAnnotation(context.getTestClass(), UiTest.class);
         if (annotationOpt.isEmpty()) {
             return null;
         }
 
-        Class<? extends TestAuthenticator> authenticatorClass = annotationOpt.get().authenticator();
-        if (FlowuiTest.NoopAuthenticator.class.isAssignableFrom(authenticatorClass)) {
+        Class<? extends UiTestAuthenticator> authenticatorClass = annotationOpt.get().authenticator();
+        if (UiTest.DefaultUiTestAuthenticator.class.isAssignableFrom(authenticatorClass)) {
             return null;
         }
 
         try {
-            Constructor<? extends TestAuthenticator> constructor = authenticatorClass.getConstructor();
+            Constructor<? extends UiTestAuthenticator> constructor = authenticatorClass.getConstructor();
             return constructor.newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException("Cannot instantiate " +
-                    TestAuthenticator.class.getSimpleName(), e);
+                    UiTestAuthenticator.class.getSimpleName(), e);
         }
     }
 

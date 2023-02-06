@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-apply plugin: 'groovy'
-
 group = 'io.jmix.flowui'
 archivesBaseName = 'jmix-flowui-test-assist'
 
 dependencies {
     api project(":flowui")
 
-    api 'org.junit.jupiter:junit-jupiter-api'
-    api 'org.junit.jupiter:junit-jupiter-engine'
-    api 'org.springframework.boot:spring-boot-test'
-    api 'org.spockframework:spock-core'
-    api 'org.spockframework:spock-spring'
+    api('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 }
