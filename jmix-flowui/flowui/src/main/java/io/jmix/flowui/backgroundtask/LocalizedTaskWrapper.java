@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  * Supposed to use when showing {@link Dialog} or some {@link View}. For instance
  * if we need to show some dialog when task is running (e.g. updating the progress).
  * <p>
- * See example in {@link DialogsImpl.BackgroundWorkDialogBuilderImpl}.
+ * See example in {@link DialogsImpl.BackgroundTaskDialogBuilderImpl}.
  *
  * @param <T> task progress measurement unit
  * @param <V> result type

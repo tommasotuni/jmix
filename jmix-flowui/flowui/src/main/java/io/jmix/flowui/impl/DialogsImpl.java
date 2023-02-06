@@ -96,9 +96,9 @@ public class DialogsImpl implements Dialogs {
     }
 
     @Override
-    public <T extends Number, V> BackgroundWorkDialogBuilder<T, V> createBackgroundWorkDialog(
+    public <T extends Number, V> BackgroundTaskDialogBuilder<T, V> createBackgroundTaskDialog(
             BackgroundTask<T, V> backgroundTask) {
-        return new BackgroundWorkDialogBuilderImpl<>(backgroundTask);
+        return new BackgroundTaskDialogBuilderImpl<>(backgroundTask);
     }
 
     protected Button createButton(Action action, Dialog dialog) {
@@ -754,7 +754,7 @@ public class DialogsImpl implements Dialogs {
         }
     }
 
-    public class BackgroundWorkDialogBuilderImpl<T extends Number, V> implements BackgroundWorkDialogBuilder<T, V> {
+    public class BackgroundTaskDialogBuilderImpl<T extends Number, V> implements BackgroundTaskDialogBuilder<T, V> {
 
         protected Dialog dialog;
 
@@ -771,7 +771,7 @@ public class DialogsImpl implements Dialogs {
 
         protected BackgroundTaskHandler<V> taskHandler;
 
-        public BackgroundWorkDialogBuilderImpl(BackgroundTask<T, V> backgroundTask) {
+        public BackgroundTaskDialogBuilderImpl(BackgroundTask<T, V> backgroundTask) {
             this.backgroundTask = backgroundTask;
 
             dialog = createDialog();
@@ -814,12 +814,14 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withCancelAllowed(boolean cancelAllowed) {
-            this.cancelAllowed = cancelAllowed;
-            if (cancelAllowed) {
-                dialog.getFooter().add(cancelButton);
-            } else {
-                dialog.getFooter().remove(cancelButton);
+        public BackgroundTaskDialogBuilder<T, V> withCancelAllowed(boolean cancelAllowed) {
+            if (this.cancelAllowed != cancelAllowed) {
+                this.cancelAllowed = cancelAllowed;
+                if (cancelAllowed) {
+                    dialog.getFooter().add(cancelButton);
+                } else {
+                    dialog.getFooter().remove(cancelButton);
+                }
             }
             return this;
         }
@@ -830,7 +832,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withTotal(Number total) {
+        public BackgroundTaskDialogBuilder<T, V> withTotal(Number total) {
             this.total = total;
             return this;
         }
@@ -841,7 +843,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withShowProgressInPercentage(boolean percentProgress) {
+        public BackgroundTaskDialogBuilder<T, V> withShowProgressInPercentage(boolean percentProgress) {
             this.showProgressInPercentage = percentProgress;
             return this;
         }
@@ -852,7 +854,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withHeader(String header) {
+        public BackgroundTaskDialogBuilder<T, V> withHeader(String header) {
             dialog.setHeaderTitle(header);
             return this;
         }
@@ -864,7 +866,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withText(String text) {
+        public BackgroundTaskDialogBuilder<T, V> withText(String text) {
             this.messageText = text;
             return this;
         }
@@ -876,7 +878,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withThemeName(String themeName) {
+        public BackgroundTaskDialogBuilder<T, V> withThemeName(String themeName) {
             dialog.setThemeName(themeName);
             return this;
         }
@@ -888,7 +890,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withClassName(@Nullable String className) {
+        public BackgroundTaskDialogBuilder<T, V> withClassName(@Nullable String className) {
             dialog.setClassName(className);
             return this;
         }
@@ -900,7 +902,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withDraggable(boolean draggable) {
+        public BackgroundTaskDialogBuilder<T, V> withDraggable(boolean draggable) {
             dialog.setDraggable(draggable);
             return this;
         }
@@ -911,7 +913,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withResizable(boolean resizable) {
+        public BackgroundTaskDialogBuilder<T, V> withResizable(boolean resizable) {
             dialog.setResizable(resizable);
             return this;
         }
@@ -922,7 +924,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withMinWidth(String minWidth) {
+        public BackgroundTaskDialogBuilder<T, V> withMinWidth(String minWidth) {
             dialog.setMinWidth(minWidth);
             return this;
         }
@@ -933,7 +935,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withMinHeight(String minHeight) {
+        public BackgroundTaskDialogBuilder<T, V> withMinHeight(String minHeight) {
             dialog.setMinHeight(minHeight);
             return this;
         }
@@ -944,7 +946,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withMaxWidth(String maxWidth) {
+        public BackgroundTaskDialogBuilder<T, V> withMaxWidth(String maxWidth) {
             dialog.setMaxWidth(maxWidth);
             return this;
         }
@@ -955,7 +957,7 @@ public class DialogsImpl implements Dialogs {
         }
 
         @Override
-        public BackgroundWorkDialogBuilder<T, V> withMaxHeight(String maxHeight) {
+        public BackgroundTaskDialogBuilder<T, V> withMaxHeight(String maxHeight) {
             dialog.setMaxHeight(maxHeight);
             return this;
         }

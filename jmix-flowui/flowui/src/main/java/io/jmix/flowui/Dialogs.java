@@ -98,11 +98,11 @@ public interface Dialogs {
     InputDialogBuilder createInputDialog(View<?> origin);
 
     /**
-     * Creates background work dialog builder.
+     * Creates background task dialog builder.
      * <br>
-     * Example of showing a background work dialog:
+     * Example of showing a background task dialog:
      * <pre>
-     * dialogs.createBackgroundWorkDialog(backgroundTask)
+     * dialogs.createBackgroundTaskDialog(backgroundTask)
      *         .withHeader("Task")
      *         .withText("My Task is Running")
      *         .withTotal(10)
@@ -114,7 +114,7 @@ public interface Dialogs {
      * @param backgroundTask background task to run
      * @return builder
      */
-    <T extends Number, V> BackgroundWorkDialogBuilder<T, V> createBackgroundWorkDialog(BackgroundTask<T, V> backgroundTask);
+    <T extends Number, V> BackgroundTaskDialogBuilder<T, V> createBackgroundTaskDialog(BackgroundTask<T, V> backgroundTask);
 
     interface OptionDialogBuilder extends DialogBuilder<OptionDialogBuilder>,
             HasText<OptionDialogBuilder>,
@@ -346,25 +346,25 @@ public interface Dialogs {
     }
 
     /**
-     * Builder of background work dialog.
+     * Builder of background task dialog.
      */
-    interface BackgroundWorkDialogBuilder<T extends Number, V> extends
-            HasHeader<BackgroundWorkDialogBuilder<T, V>>,
-            HasText<BackgroundWorkDialogBuilder<T, V>>,
-            HasTheme<BackgroundWorkDialogBuilder<T, V>>,
-            HasStyle<BackgroundWorkDialogBuilder<T, V>>,
-            Draggable<BackgroundWorkDialogBuilder<T, V>>,
-            Resizable<BackgroundWorkDialogBuilder<T, V>> {
+    interface BackgroundTaskDialogBuilder<T extends Number, V> extends
+            HasHeader<BackgroundTaskDialogBuilder<T, V>>,
+            HasText<BackgroundTaskDialogBuilder<T, V>>,
+            HasTheme<BackgroundTaskDialogBuilder<T, V>>,
+            HasStyle<BackgroundTaskDialogBuilder<T, V>>,
+            Draggable<BackgroundTaskDialogBuilder<T, V>>,
+            Resizable<BackgroundTaskDialogBuilder<T, V>> {
 
         /**
          * Determines whether the dialog can be closed.
          * <p>
          * The default value is {@code false}.
          *
-         * @param cancelAllowed true if dialog is closeable
+         * @param cancelAllowed {@code true} if dialog is closeable
          * @return builder
          */
-        BackgroundWorkDialogBuilder<T, V> withCancelAllowed(boolean cancelAllowed);
+        BackgroundTaskDialogBuilder<T, V> withCancelAllowed(boolean cancelAllowed);
 
         /**
          * @return {@code true} if the dialog can be closed
@@ -380,7 +380,7 @@ public interface Dialogs {
          * @param total amount of items to be processed by background task,
          * @return builder
          */
-        BackgroundWorkDialogBuilder<T, V> withTotal(Number total);
+        BackgroundTaskDialogBuilder<T, V> withTotal(Number total);
 
         /**
          * @return amount of items to be processed by background task
@@ -393,7 +393,7 @@ public interface Dialogs {
          * @param percentProgress {@code true} to show progress in percents
          * @return builder
          */
-        BackgroundWorkDialogBuilder<T, V> withShowProgressInPercentage(boolean percentProgress);
+        BackgroundTaskDialogBuilder<T, V> withShowProgressInPercentage(boolean percentProgress);
 
         /**
          * @return {@code true} if progress should is shown in percents
