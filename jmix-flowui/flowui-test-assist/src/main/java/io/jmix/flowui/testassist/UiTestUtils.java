@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.junit;
+package io.jmix.flowui.testassist;
 
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
@@ -26,9 +26,9 @@ import java.util.List;
 /**
  * Class provides helper methods for testing.
  */
-public final class TestViewsHelper {
+public final class UiTestUtils {
 
-    private TestViewsHelper() {
+    private UiTestUtils() {
     }
 
     /**
@@ -40,7 +40,7 @@ public final class TestViewsHelper {
      *     viewNavigators.view(UserListView.class)
      *             .navigate();
      *
-     *     UserListView view = TestViewsHelper.getCurrentView();
+     *     UserListView view = UiTestUtils.getCurrentView();
      * }
      * </pre>
      * @return instance of currently navigated view

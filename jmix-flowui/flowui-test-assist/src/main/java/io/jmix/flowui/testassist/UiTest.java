@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.junit;
+package io.jmix.flowui.testassist;
 
 import io.jmix.core.security.SystemAuthenticator;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ import java.lang.annotation.*;
  *         viewNavigators.view(UserListView.class)
  *                 .navigate();
  *
- *         UserListView view = TestViewsHelper.getCurrentView();
+ *         UserListView view = UiTestUtils.getCurrentView();
  *
  *         CollectionContainer<User> usersDc = ViewControllerUtils.getViewData(view)
  *                 .getContainer("usersDc");
@@ -69,9 +69,9 @@ public @interface UiTest {
     /**
      * Class providing authentication management in tests.
      * <p>
-     * By default, for authentication is used {@link SystemAuthenticator}.
+     * By default, {@link SystemAuthenticator} is used for authentication.
      *
-     * @return class that implement {@link UiTestAuthenticator}
+     * @return class that implements {@link UiTestAuthenticator}
      */
     Class<? extends UiTestAuthenticator> authenticator() default DefaultUiTestAuthenticator.class;
 

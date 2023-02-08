@@ -14,36 +14,32 @@
  * limitations under the License.
  */
 
-package component.image;
+package jmix_ui_test_extension;
 
-import component.image.view.JmixImageTestView;
-import io.jmix.flowui.ViewNavigators;
+import io.jmix.core.security.CurrentAuthentication;
 import io.jmix.flowui.testassist.FlowuiTestAssistConfiguration;
-import io.jmix.flowui.testassist.junit.TestViewsHelper;
-import io.jmix.flowui.testassist.junit.UiTest;
-import org.apache.logging.log4j.util.Strings;
+import io.jmix.flowui.testassist.UiTest;
+import jmix_ui_test_extension.test_support.CustomUiTestAuthenticator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.User;
 import test_support.FlowuiTestConfiguration;
 
-@UiTest(viewBasePackages = "component.image")
+@UiTest(viewBasePackages = "component.image", authenticator = CustomUiTestAuthenticator.class)
 @SpringBootTest(classes = {FlowuiTestConfiguration.class, FlowuiTestAssistConfiguration.class})
-public class JUnitJmixImageTest {
+public class UiTestCustomAuthenticator {
 
     @Autowired
-    private ViewNavigators viewNavigators;
+    private CurrentAuthentication currentAuthentication;
 
-    @DisplayName("Load JmixImage with dataContainer")
+    @DisplayName("Test custom authenticator")
     @Test
-    public void loadJmixImageWithDataContainer() {
-        viewNavigators.view(JmixImageTestView.class)
-                .navigate();
+    public void testCustomAuthenticator() {
+        User principal = (User) currentAuthentication.getAuthentication().getPrincipal();
 
-        JmixImageTestView view = TestViewsHelper.getCurrentView();
-
-        Assertions.assertTrue(Strings.isNotEmpty(view.imageByteArray.getSrc()));
+        Assertions.assertEquals(CustomUiTestAuthenticator.username, principal.getUsername());
     }
 }

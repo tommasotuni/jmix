@@ -15,6 +15,6 @@
  */
 
 @NonNullApi
-package io.jmix.flowui.testassist.junit;
+package io.jmix.flowui.testassist;
 
 import org.springframework.lang.NonNullApi;

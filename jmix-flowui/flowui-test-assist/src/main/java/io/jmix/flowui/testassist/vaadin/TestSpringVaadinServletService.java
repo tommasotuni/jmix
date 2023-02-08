@@ -19,8 +19,13 @@ package io.jmix.flowui.testassist.vaadin;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.VaadinServlet;
 import com.vaadin.flow.spring.SpringVaadinServletService;
+import io.jmix.flowui.view.View;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Disables atmosphere because testing server-side {@link View} does not require
+ * connection with client-side.
+ */
 public class TestSpringVaadinServletService extends SpringVaadinServletService {
 
     public TestSpringVaadinServletService(VaadinServlet servlet,

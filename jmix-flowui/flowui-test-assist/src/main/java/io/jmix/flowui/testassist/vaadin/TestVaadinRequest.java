@@ -16,11 +16,17 @@
 
 package io.jmix.flowui.testassist.vaadin;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinServletService;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * Mocks {@link HttpServletRequest}. This class is required by {@link UI} initialization.
+ */
 public class TestVaadinRequest extends VaadinServletRequest implements VaadinRequest {
 
     public TestVaadinRequest(VaadinServletService vaadinService) {

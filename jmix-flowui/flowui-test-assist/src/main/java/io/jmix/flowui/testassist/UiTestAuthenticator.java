@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.testassist.junit;
+package io.jmix.flowui.testassist;
 
 import org.springframework.context.ApplicationContext;
 
