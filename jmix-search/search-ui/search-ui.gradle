@@ -28,3 +28,7 @@ dependencies {
     compileOnly project(':security')
     compileOnly project(':security-ui')
 }
+
+jar.manifest {
+    attributes(['Vaadin-Stylesheets': 'VAADIN/addons/search/search.scss'])
+}
