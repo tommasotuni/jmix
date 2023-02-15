@@ -22,13 +22,17 @@ import io.jmix.core.security.SecurityContextHelper
 import io.jmix.ui.UiProperties
 import io.jmix.ui.screen.OpenMode
 import io.jmix.ui.screen.Screen
+import io.jmix.ui.testassist.TestContextInititalizer
+import io.jmix.ui.testassist.UiTestAssistConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.test.context.ContextConfiguration
 
 @Internal
 @SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
+@ContextConfiguration(classes = [UiTestAssistConfiguration], initializers = [TestContextInititalizer])
 class ScreenSpecification extends UiTestAssistSpecification {
 
     @Autowired

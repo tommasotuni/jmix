@@ -15,23 +15,18 @@
  */
 
 apply plugin: 'groovy'
-apply plugin: 'io.jmix'
 
 group = 'io.jmix.ui'
-archivesBaseName = 'jmix-ui-data'
+archivesBaseName = 'jmix-ui-test-assist-spock'
 
 dependencies {
-    api project(':ui')
+    api project(":ui")
+    api project(":ui-test-assist")
 
-    api project(':data')
+    api 'org.junit.jupiter:junit-jupiter-api'
+    api 'org.junit.jupiter:junit-jupiter-engine'
 
-    implementation 'com.google.code.gson:gson'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations'
-
-    testImplementation project(':ui-test-assist-spock')
-    testImplementation project(':ui-test-assist')
-    testImplementation project(':eclipselink')
-    testRuntimeOnly 'org.slf4j:slf4j-simple'
-    testRuntimeOnly 'org.hsqldb:hsqldb'
+    api 'org.springframework:spring-test'
+    api 'org.spockframework:spock-core'
+    api 'org.spockframework:spock-spring'
 }
