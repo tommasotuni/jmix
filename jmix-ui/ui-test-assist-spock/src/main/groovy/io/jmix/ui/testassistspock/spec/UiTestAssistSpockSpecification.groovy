@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.testassist.spec
+package io.jmix.ui.testassistspock.spec
 
 import com.vaadin.server.VaadinSession
 import com.vaadin.server.WebBrowser
@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField
 
 @ExtendWith(SpringExtension.class)
-abstract class UiTestAssistSpecification extends Specification {
+abstract class UiTestAssistSpockSpecification extends Specification {
 
     @Autowired
     Metadata metadata

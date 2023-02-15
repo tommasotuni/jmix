@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.ui.testassist.spec
+package io.jmix.ui.testassistspock.spec
 
 import io.jmix.core.annotation.Internal
 import io.jmix.core.security.ClientDetails
@@ -33,14 +33,14 @@ import org.springframework.test.context.ContextConfiguration
 @Internal
 @SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
 @ContextConfiguration(classes = [UiTestAssistConfiguration], initializers = [TestContextInititalizer])
-class ScreenSpecification extends UiTestAssistSpecification {
+class ScreenSpecification extends UiTestAssistSpockSpecification {
 
     @Autowired
     UiProperties uiProperties
 
     @Override
     void setup() {
-        exportScreensPackages(['io.jmix.ui.testassist.app.main'])
+        exportScreensPackages(['io.jmix.ui.testassistspock.app.main'])
     }
 
     @Override
