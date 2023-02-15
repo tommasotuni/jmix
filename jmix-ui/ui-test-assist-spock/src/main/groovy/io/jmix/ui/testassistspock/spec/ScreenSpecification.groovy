@@ -33,7 +33,7 @@ import org.springframework.test.context.ContextConfiguration
 @Internal
 @SuppressWarnings(["GroovyAccessibility", "GroovyAssignabilityCheck"])
 @ContextConfiguration(classes = [UiTestAssistConfiguration], initializers = [TestContextInititalizer])
-class ScreenSpecification extends UiTestAssistSpockSpecification {
+class ScreenSpecification extends UiTestAssistSpecification {
 
     @Autowired
     UiProperties uiProperties

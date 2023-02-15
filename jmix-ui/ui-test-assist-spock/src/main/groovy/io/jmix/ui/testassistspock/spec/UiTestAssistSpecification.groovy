@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServletRequest
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField
 
 @ExtendWith(SpringExtension.class)
-abstract class UiTestAssistSpockSpecification extends Specification {
+abstract class UiTestAssistSpecification extends Specification {
 
     @Autowired
     Metadata metadata
