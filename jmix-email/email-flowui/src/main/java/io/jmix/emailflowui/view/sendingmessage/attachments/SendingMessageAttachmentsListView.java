@@ -21,11 +21,11 @@ import io.jmix.email.entity.SendingMessage;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.*;
 
-@ViewController("email_sendingMessageAttachmentsLookupView")
-@ViewDescriptor("sending-message-attachments-lookup-view.xml")
+@ViewController("email_SendingMessageAttachments.list")
+@ViewDescriptor("sending-message-attachments-list-view.xml")
 @DialogMode(width = "50em", height = "37.5em", resizable = true)
 @LookupComponent("attachmentsDataGrid")
-public class SendingMessageAttachmentsLookupView extends StandardListView<SendingAttachment> {
+public class SendingMessageAttachmentsListView extends StandardListView<SendingAttachment> {
 
     @ViewComponent
     protected CollectionLoader<SendingAttachment> sendingAttachmentsDl;

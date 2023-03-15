@@ -14,11 +14,13 @@
   ~ limitations under the License.
   -->
 <view xmlns="http://jmix.io/schema/flowui/view"
-      title="msg://sendingMessageAttachmentsLookupView.title">
+      title="msg://sendingMessageAttachmentsListView.title">
     <data>
         <collection id="attachmentsDc"
-                    class="io.jmix.email.entity.SendingAttachment"
-                    fetchPlan="sendingAttachmentLookupView">
+                    class="io.jmix.email.entity.SendingAttachment">
+            <fetchPlan extends="_local">
+                <property name="updateTs"/>
+            </fetchPlan>
             <loader id="sendingAttachmentsDl">
                 <query>
                     <![CDATA[select sa from email_SendingAttachment sa where sa.message.id = :messageId]]>
@@ -32,7 +34,9 @@
     </actions>
     <layout>
         <genericFilter dataLoader="sendingAttachmentsDl"/>
-        <simplePagination id="pagination" dataLoader="sendingAttachmentsDl"/>
+        <hbox classNames="buttons-panel">
+            <simplePagination id="pagination" dataLoader="sendingAttachmentsDl"/>
+        </hbox>
         <dataGrid id="attachmentsDataGrid" dataContainer="attachmentsDc" width="100%">
             <columns>
                 <column property="name"/>

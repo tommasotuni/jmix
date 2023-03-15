@@ -19,8 +19,28 @@
     <data readOnly="true">
         <collection
                 id="sendingMessagesDc"
-                class="io.jmix.email.entity.SendingMessage"
-                fetchPlan="sendingMessageView">
+                class="io.jmix.email.entity.SendingMessage">
+            <fetchPlan extends="_local">
+                <property name="important"/>
+                <property name="address"/>
+                <property name="cc"/>
+                <property name="bcc"/>
+                <property name="attachmentsName"/>
+                <property name="attemptsLimit"/>
+                <property name="attemptsMade"/>
+                <property name="subject"/>
+                <property name="dateSent"/>
+                <property name="deadline"/>
+                <property name="from"/>
+                <property name="status"/>
+                <property name="createTs"/>
+                <property name="updateTs"/>
+                <property name="bodyContentType"/>
+                <property name="contentText"/>
+                <property name="contentTextFile"/>
+                <property name="headers"/>
+                <property name="attachments" fetchPlan="_local"/>
+            </fetchPlan>
             <loader id="sendingMessagesDl">
                 <query>
                     <![CDATA[select sm from email_SendingMessage sm order by sm.createTs desc]]>
@@ -43,7 +63,7 @@
                 <dataGrid id="sendingMessageDataGrid" width="100%" dataContainer="sendingMessagesDc">
                     <actions>
                         <action id="downloadAttachment" text="msg://sendingMessageView.downloadAttachments.text"
-                                type="itemTracking" icon="DOWNLOAD"/>
+                                type="itemTracking" icon="lumo:download"/>
                         <action id="resendEmail" text="msg://sendingMessageView.resendEmail.text" type="itemTracking"
                                 icon="lumo:reload"/>
                     </actions>
