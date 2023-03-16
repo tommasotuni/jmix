@@ -52,8 +52,8 @@
         <dataLoadCoordinator auto="true"/>
     </facets>
     <layout>
-        <split width="100%" height="100%" splitterPosition="70">
-            <vbox id="primaryContent" expand="sendingMessageDataGrid" height="100%">
+        <split width="100%" height="100%" splitterPosition="70" themeNames="splitter-spacing">
+            <vbox id="primaryContent" padding="false" expand="sendingMessageDataGrid" height="100%">
                 <genericFilter dataLoader="sendingMessagesDl"/>
                 <hbox id="buttonsPanel" classNames="buttons-panel">
                     <button id="downloadAttachmentBtn" action="sendingMessageDataGrid.downloadAttachment"/>
@@ -87,31 +87,29 @@
                 </dataGrid>
             </vbox>
             <scroller id="secondaryContent" width="100%" height="100%">
-                <vbox>
-                    <formLayout id="messageForm" dataContainer="sendingMessagesDc" width="100%">
-                        <textField id="address" property="address" readOnly="true"/>
-                        <textField id="cc" property="cc" readOnly="true"/>
-                        <textField id="bcc" property="bcc" readOnly="true"/>
-                        <textField id="from" property="from" readOnly="true"/>
-                        <textField id="subject" property="subject" readOnly="true"/>
-                        <vbox padding="false">
-                            <textArea id="contentTextArea" property="contentText" width="100%"
-                                      label="msg://io.jmix.email.entity/SendingMessage.contentText" readOnly="true"/>
-                            <button id="showContentBtn" text="msg://sendingMessageView.showContentBtn.text"
-                                    icon="ENVELOPE_OPEN" enabled="false"/>
-                        </vbox>
-                        <textField id="bodyContentType" property="bodyContentType" readOnly="true"/>
-                        <textField id="status" property="status" readOnly="true"/>
-                        <textField id="attachmentsName" property="attachmentsName" readOnly="true"/>
-                        <dateTimePicker id="createTs" property="createTs" readOnly="true"/>
-                        <dateTimePicker id="dateSent" property="dateSent" readOnly="true"/>
-                        <dateTimePicker id="updateTs" property="updateTs" readOnly="true"/>
-                        <dateTimePicker id="deadline" property="deadline" readOnly="true"/>
-                        <textField id="attemptsLimit" property="attemptsLimit" readOnly="true"/>
-                        <textField id="attemptsMade" property="attemptsMade" readOnly="true"/>
-                        <checkbox id="important" property="important" readOnly="true"/>
-                    </formLayout>
-                </vbox>
+                <formLayout id="messageForm" dataContainer="sendingMessagesDc" width="100%">
+                    <textField id="address" property="address" readOnly="true"/>
+                    <textField id="cc" property="cc" readOnly="true"/>
+                    <textField id="bcc" property="bcc" readOnly="true"/>
+                    <textField id="from" property="from" readOnly="true"/>
+                    <textField id="subject" property="subject" readOnly="true"/>
+                    <vbox padding="false">
+                        <textArea id="contentTextArea" property="contentText" width="100%"
+                                  label="msg://io.jmix.email.entity/SendingMessage.contentText" readOnly="true"/>
+                        <button id="showContentBtn" text="msg://sendingMessageView.showContentBtn.text"
+                                icon="ENVELOPE_OPEN" enabled="false"/>
+                    </vbox>
+                    <textField id="bodyContentType" property="bodyContentType" readOnly="true"/>
+                    <textField id="status" property="status" readOnly="true"/>
+                    <textField id="attachmentsName" property="attachmentsName" readOnly="true"/>
+                    <dateTimePicker id="createTs" property="createTs" readOnly="true"/>
+                    <dateTimePicker id="dateSent" property="dateSent" readOnly="true"/>
+                    <dateTimePicker id="updateTs" property="updateTs" readOnly="true"/>
+                    <dateTimePicker id="deadline" property="deadline" readOnly="true"/>
+                    <textField id="attemptsLimit" property="attemptsLimit" readOnly="true"/>
+                    <textField id="attemptsMade" property="attemptsMade" readOnly="true"/>
+                    <checkbox id="important" property="important" readOnly="true"/>
+                </formLayout>
             </scroller>
         </split>
     </layout>
