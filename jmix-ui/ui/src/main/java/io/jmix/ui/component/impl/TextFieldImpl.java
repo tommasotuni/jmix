@@ -24,8 +24,10 @@ import io.jmix.core.Messages;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.common.event.Subscription;
 import io.jmix.core.metamodel.datatype.Datatype;
+import io.jmix.core.metamodel.datatype.impl.BigDecimalDatatype;
 import io.jmix.core.metamodel.model.Range;
 import io.jmix.core.security.CurrentAuthentication;
+import io.jmix.ui.UiComponentProperties;
 import io.jmix.ui.component.TextField;
 import io.jmix.ui.component.data.ConversionException;
 import io.jmix.ui.component.data.DataAwareComponentsTools;
@@ -36,6 +38,7 @@ import io.jmix.ui.component.formatter.Formatter;
 import io.jmix.ui.widget.JmixTextField;
 import io.jmix.ui.widget.ShortcutListenerDelegate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -63,6 +66,8 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
 
     protected DataAwareComponentsTools dataAwareComponentsTools;
 
+    protected UiComponentProperties uiComponentProperties;
+
     public TextFieldImpl() {
         this.component = createComponent();
 
@@ -77,6 +82,11 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
     @Autowired
     public void setCurrentAuthentication(CurrentAuthentication currentAuthentication) {
         this.locale = currentAuthentication.getLocale();
+    }
+
+    @Autowired
+    public void setUiComponentProperties(UiComponentProperties uiComponentProperties) {
+        this.uiComponentProperties = uiComponentProperties;
     }
 
     protected JmixTextField createComponent() {
@@ -152,6 +162,13 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
     @Nullable
     @Override
     protected V convertToModel(@Nullable String componentRawValue) throws ConversionException {
+        Pair<V, Datatype<V>> conversionResult = convertRawValue(componentRawValue);
+        V modelValue = conversionResult.getLeft();
+        Datatype<V> valueDatatype = conversionResult.getRight();
+        return processModelValue(modelValue, valueDatatype);
+    }
+
+    protected Pair<V, Datatype<V>> convertRawValue(@Nullable String componentRawValue) throws ConversionException {
         String value = emptyToNull(componentRawValue);
 
         if (isTrimming()) {
@@ -160,7 +177,8 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
 
         if (datatype != null) {
             try {
-                return datatype.parse(value, locale);
+                V modelValue = datatype.parse(value, locale);
+                return Pair.of(modelValue, datatype);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
@@ -173,7 +191,8 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
             EntityValueSource entityValueSource = (EntityValueSource) valueBinding.getSource();
             Datatype<V> propertyDataType = entityValueSource.getMetaPropertyPath().getRange().asDatatype();
             try {
-                return propertyDataType.parse(value, locale);
+                V modelValue = propertyDataType.parse(value, locale);
+                return Pair.of(modelValue, propertyDataType);
             } catch (ValueConversionException e) {
                 throw new ConversionException(e.getLocalizedMessage(), e);
             } catch (ParseException e) {
@@ -181,7 +200,8 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
             }
         }
 
-        return super.convertToModel(value);
+        V modelValue = super.convertToModel(value);
+        return Pair.of(modelValue, null);
     }
 
     @Override
@@ -193,6 +213,25 @@ public class TextFieldImpl<V> extends AbstractField<JmixTextField, String, V>
     @Override
     public String getConversionErrorMessage() {
         return conversionErrorMessage;
+    }
+
+    @Nullable
+    protected V processModelValue(@Nullable V modelValue, @Nullable Datatype<V> valueDatatype) {
+        if (modelValue == null) {
+            return null;
+        }
+        if (valueDatatype == null) {
+            return modelValue;
+        }
+
+        V outputValue = modelValue;
+        if (valueDatatype instanceof BigDecimalDatatype) {
+            if (uiComponentProperties.isTextFieldDecimalValueRoundByFormat()) {
+                String presentationValue = convertToPresentation(modelValue);
+                outputValue = convertRawValue(presentationValue).getLeft();
+            }
+        }
+        return outputValue;
     }
 
     protected String getConversionErrorMessageInternal() {
