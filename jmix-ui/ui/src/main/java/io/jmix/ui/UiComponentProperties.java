@@ -121,11 +121,6 @@ public class UiComponentProperties {
      */
     boolean filterShowConfigurationIdField;
 
-    /**
-     * Whether TextField with decimal datatype should round the actual model value according to format settings.
-     */
-    boolean textFieldDecimalValueRoundByFormat;
-
     public UiComponentProperties(
             @DefaultValue("true") boolean htmlSanitizerEnabled,
             @DefaultValue("20") int uploadFieldMaxUploadSizeMb,
@@ -151,8 +146,7 @@ public class UiComponentProperties {
             @DefaultValue("true") boolean filterAutoApply,
             @DefaultValue("2") int filterPropertiesHierarchyDepth,
             @DefaultValue("3") int filterColumnsCount,
-            @DefaultValue("false") boolean filterShowConfigurationIdField,
-            @DefaultValue("true") boolean textFieldDecimalValueRoundByFormat
+            @DefaultValue("false") boolean filterShowConfigurationIdField
     ) {
         this.htmlSanitizerEnabled = htmlSanitizerEnabled;
         this.uploadFieldMaxUploadSizeMb = uploadFieldMaxUploadSizeMb;
@@ -179,7 +173,6 @@ public class UiComponentProperties {
         this.filterPropertiesHierarchyDepth = filterPropertiesHierarchyDepth;
         this.filterColumnsCount = filterColumnsCount;
         this.filterShowConfigurationIdField = filterShowConfigurationIdField;
-        this.textFieldDecimalValueRoundByFormat = textFieldDecimalValueRoundByFormat;
     }
 
     public int getUploadFieldMaxUploadSizeMb() {
@@ -313,12 +306,5 @@ public class UiComponentProperties {
      */
     public boolean isFilterShowConfigurationIdField() {
         return filterShowConfigurationIdField;
-    }
-
-    /**
-     * @see #textFieldDecimalValueRoundByFormat
-     */
-    public boolean isTextFieldDecimalValueRoundByFormat() {
-        return textFieldDecimalValueRoundByFormat;
     }
 }

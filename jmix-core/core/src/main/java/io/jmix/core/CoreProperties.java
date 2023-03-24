@@ -100,6 +100,11 @@ public class CoreProperties {
      */
     PessimisticLock pessimisticLock;
 
+    /**
+     * Whether BigDecimalDatatype should round the actual parsed value according to format settings.
+     */
+    boolean bigDecimalValueRoundByFormat;
+
     public CoreProperties(
             String webHostName,
             String webPort,
@@ -119,7 +124,8 @@ public class CoreProperties {
             @DefaultValue("false") boolean legacyFetchPlanSerializationAttributeName,
             @DefaultValue("true") boolean triggerFilesEnabled,
             @DefaultValue("5000") Duration triggerFilesProcessInterval,
-            @DefaultValue PessimisticLock pessimisticLock) {
+            @DefaultValue PessimisticLock pessimisticLock,
+            @DefaultValue("true") boolean bigDecimalValueRoundByFormat) {
         this.webHostName = webHostName;
         this.webPort = webPort;
         this.confDir = confDir;
@@ -148,6 +154,7 @@ public class CoreProperties {
         this.triggerFilesEnabled = triggerFilesEnabled;
         this.triggerFilesProcessInterval = triggerFilesProcessInterval;
         this.pessimisticLock = pessimisticLock;
+        this.bigDecimalValueRoundByFormat = bigDecimalValueRoundByFormat;
     }
 
     public String getWebHostName() {
@@ -280,5 +287,12 @@ public class CoreProperties {
             return useDefaultQuartzConfiguration;
         }
 
+    }
+
+    /**
+     * @see #bigDecimalValueRoundByFormat
+     */
+    public boolean isBigDecimalValueRoundByFormat() {
+        return bigDecimalValueRoundByFormat;
     }
 }
