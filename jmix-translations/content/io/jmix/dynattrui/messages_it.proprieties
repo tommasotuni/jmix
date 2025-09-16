@@ -1,0 +1,171 @@
+#
+# Copyright 2020 Haulmont.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+menu-config.dynat_Category.browse=Attributi dinamici
+
+# CategoryBrowse
+io.jmix.dynattrui.screen.category/browseCaption=Attributi dinamici
+io.jmix.dynattrui.screen.category/categoriesTable.create=Crea categoria
+io.jmix.dynattrui.screen.category/categoriesTable.applyChanges=Applica modifiche
+io.jmix.dynattrui.screen.category/notification.changesApplied=Le modifiche sono state applicate
+io.jmix.dynattrui.screen.category/categoriesTable.name=Categoria
+io.jmix.dynattrui.screen.category/categoryAttributes.caption=Attributi categoria
+# CategoryEdit
+io.jmix.dynattrui.screen.category/editorCaption=Editor di categorie
+io.jmix.dynattrui.screen.category/mainTab.caption=Generale
+io.jmix.dynattrui.screen.category/attributesLocationTab.caption=Posizione attributi
+io.jmix.dynattrui.screen.category/nameField.required=Nome richiesto
+io.jmix.dynattrui.screen.category/nothingToExport=Nessun elemento da esportare
+io.jmix.dynattrui.screen.category/entityTypeField.required=Tipo di entità richiesto
+io.jmix.dynattrui.screen.category/export=Esporta
+io.jmix.dynattrui.screen.category/exportFailed=Esportazione fallita
+io.jmix.dynattrui.screen.category/exportJSON=Esporta come JSON
+io.jmix.dynattrui.screen.category/exportZIP=Esporta come ZIP
+io.jmix.dynattrui.screen.category/import=Importa
+io.jmix.dynattrui.screen.category/importFailed=Importazione fallita
+io.jmix.dynattrui.screen.category/importSuccessful=Attributi dinamici importati con successo
+io.jmix.dynattrui.screen.category/localizationTab.caption=Localizzazione
+# CategoriaAttrsFragment
+io.jmix.dynattrui.screen.categoryattr/categoryAttrsTable.defaultValue=Valore predefinito
+io.jmix.dynattrui.screen.categoryattr/categoryAttrsTable.currentDate=Data corrente
+io.jmix.dynattrui.screen.categoryattr/categoryAttrsTable.entityNotFound=Entità non trovata
+io.jmix.dynattrui.screen.categoryattr/classNotFound=Classe non trovata
+
+#CategoryAttrsEdit
+io.jmix.dynattrui.screen.categoryattr/editorCaption=Editor attributi categoria
+io.jmix.dynattrui.screen.categoryattr/mainTab.caption=Generale
+io.jmix.dynattrui.screen.categoryattr/nameField.required=Nome richiesto
+io.jmix.dynattrui.screen.categoryattr/codeField.required=Codice richiesto
+io.jmix.dynattrui.screen.categoryattr/dataTypeField.required=Tipo di attributo richiesto
+io.jmix.dynattrui.screen.categoryattr/enumerationField.required=Enumerazione richiesta
+io.jmix.dynattrui.screen.categoryattr/lookupField.contextHelp=Ti permette di utilizzare il campo di ricerca per selezionare i valori degli attributi. \
+   Configurare l'elenco dei valori possibili su "Valori calcolati e opzioni". \
+   È possibile configurare la clausola join e where per un attributo di entità.
+io.jmix.dynattrui.screen.categoryattr/entityClassField.required=Tipo di entità richiesto
+io.jmix.dynattrui.screen.categoryattr/screenField.required=Schermata entità richiesta
+io.jmix.dynattrui.screen.categoryattr/widthField.validationMessage=La larghezza non è corretta
+io.jmix.dynattrui.screen.categoryattr/rowsCountField.validationMessage=Il conteggio delle righe deve essere un numero compreso tra 1 e 40
+io.jmix.dynattrui.screen.categoryattr/calculatedValuesAndOptionsTab.caption=Valori calcolati e opzioni
+io.jmix.dynattrui.screen.categoryattr/constraintWizardField.caption=Creazione guidata vincoli
+io.jmix.dynattrui.screen.categoryattr/selectEntityType=Seleziona il tipo di entità
+io.jmix.dynattrui.screen.categoryattr/minGreaterThanMax=Il valore minimo non può essere maggiore del massimo
+io.jmix.dynattrui.screen.categoryattr/defaultLessThanMin=Il valore predefinito non può essere inferiore al minimo
+io.jmix.dynattrui.screen.categoryattr/defaultGreaterThanMax=Il valore predefinito non può essere maggiore del massimo
+io.jmix.dynattrui.screen.categoryattr/defaultValueIsNotInEnumeration=Il valore predefinito non è nell'enumerazione
+io.jmix.dynattrui.screen.categoryattr/dependsOnAttributes.validationMsg=Almeno un attributo deve essere presente in \
+   Elenco "L'attributo dipende da", altrimenti lo script di ricalcolo non verrà mai eseguito
+io.jmix.dynattrui.screen.categoryattr/uniqueName=L'attributo con lo stesso nome esiste già
+io.jmix.dynattrui.screen.categoryattr/uniqueCode=L'attributo con lo stesso codice esiste già
+io.jmix.dynattrui.screen.categoryattr/localizationTab.caption=Localizzazione
+io.jmix.dynattrui.screen.categoryattr/visibilityTab.caption=Visibilità
+io.jmix.dynattrui.screen.categoryattr/visibilityTab.help=Сonfigure <b>dynamicAttributes</b> facet per schermi che visualizzeranno attributi dinamici.
+io.jmix.dynattrui.screen.categoryattr/targetScreensTable.create=Aggiungi schermata di destinazione
+io.jmix.dynattrui.screen.categoryattr/targetScreensTable.remove=Rimuovi schermo di destinazione
+io.jmix.dynattrui.screen.categoryattr/optionsLoaderGroovyScript=Script groovy del caricatore di opzioni
+io.jmix.dynattrui.screen.categoryattr/optionsLoaderGroovyScriptHelp=Ti permette di caricare le opzioni degli attributi dinamici tramite uno script Groovy.\
+   <br/>Uno script dovrebbe restituire un elenco di opzioni. L'entità con attributi dinamici è disponibile \
+   nello script dalla variabile <code>entity</code>. Nota che la variabile <code>entity</code> può essere <code>null</code> in caso di utilizzo in \
+   filtro con componente di ricerca.\
+   <br/>\
+   <br/>Ad esempio:\
+   <br/><code>retu rn ['code_1', 'code_2', (entità ? entity.code : 'code_0')]</code>
+io.jmix.dynattrui.screen.categoryattr/optionsLoaderSqlScript=Script SQL caricatore opzioni
+io.jmix.dynattrui.screen.categoryattr/optionsLoaderSqlScriptHelp=Ti permette di caricare le opzioni degli attributi dinamici tramite uno script SQL.\
+   <br/>Uno script dovrebbe restituire un elenco di opzioni.\
+   <br/>I valori degli attributi dinamici nello script sono disponibili dalla variabile <code>entity</code>. Nota che l'<code>entità</code> \
+   la variabile non sarà definita nel filtro con il componente di ricerca.\
+   <br/>\
+   <br/>Ad esempio:\
+   <br/><code>seleziona la via da db_Address e dove e.strName = ${entity.+&lt;dynamicAttrCode&gt;}</code>\
+   <br/>dove &lt;dynamicAttrCode&gt; - codice dell'attributo dinamico corrispondente
+io.jmix.dynattrui.screen.categoryattr/joinClause=Clausola di unione
+io.jmix.dynattrui.screen.categoryattr/joinClauseHelp=Un valore di questo campo viene aggiunto alla clausola della query "from". Dovrebbe iniziare con una virgola, "join" o "left join".\
+   <br/>I valori degli attributi dinamici nello script sono disponibili dalla variabile <code>entity</code>:\
+   <br/>${entity.+&lt;dynamicAttrCode&gt;}, dove &lt;dynamicAttrCode&gt; - codice dell'attributo dinamico corrispondente. \
+   <br/>Notare che la variabile <code>entity</code> non sarà definita nel filtro con il componente di ricerca.\
+   <br/>Il segnaposto {E} deve essere utilizzato come alias dell'entità da estrarre. All'esecuzione della query, verrà sostituito con un alias, specificato nella query.\
+   <br/>\
+   <br/>Ad esempio:\
+   <br/><code>unisciti a {E}.seller s</code>
+io.jmix.dynattrui.screen.categoryattr/whereClause=Clausola Where
+io.jmix.dynattrui.screen.categoryattr/whereClauseHelp=Un valore di questo campo viene aggiunto alla clausola di query "where" utilizzando la condizione "and". La parola "dove" non è necessaria, poiché verrà aggiunta automaticamente.\
+   <br/>Il segnaposto {E} deve essere utilizzato come alias dell'entità da estrarre. All'esecuzione della query, verrà sostituito con un alias reale, specificato nella query.\
+   <br/>I valori degli attributi dinamici nello script sono disponibili dalla variabile <code>entity</code>. Nota che l'<code>entità</code> \
+   la variabile non sarà definita nel filtro con il componente di ricerca.\
+   <br/>\
+   <br/>Ad esempio:\
+   <br/><code>{E}.salary > ${entity.+&lt;dynamicAttrCode&gt;} e {E}.department = 'abc'</code>\
+   <br/>dove &lt;dynamicAttrCode&gt; - codice dell'attributo dinamico corrispondente
+io.jmix.dynattrui.screen.categoryattr/validationScript=Convalida personalizzata
+io.jmix.dynattrui.screen.categoryattr/validationScriptHelp=Ti permette di applicare uno script Groovy sul parametro prima di salvarlo.\
+   <br/>In caso di convalida fallita, uno script Groovy dovrebbe restituire un messaggio di errore. Altrimenti \
+   uno script non dovrebbe restituire alcun valore o restituire <code>null</code>. \
+   <br/>Il valore è disponibile nello script tramite la variabile <code>value</code>. \
+   Per il messaggio di errore utilizza la stringa del modello \
+   ed è possibile utilizzare la chiave '${value}' per l'output formattato.\
+   <br/>\
+   <br/>Ad esempio:\
+   <br/><code>if (!value.startsWith("correctValue")) restituisce "il valore '\\${value}' non è corretto"</code>
+io.jmix.dynattrui.screen.categoryattr/recalculationScript=Script di ricalcolo
+io.jmix.dynattrui.screen.categoryattr/recalculationScriptHelp=Script Groovy usato per ricalcolare il valore di questo parametro.\
+   <br/> Le seguenti variabili vengono passate allo script: \
+   <br/>\
+   <br/><code>entità</code> - entità di modifica corrente \
+   <br/>\
+   <br/><code>dynamicAttributes</code> - una mappa in cui una chiave è il codice dell'attributo, un valore è il valore dell'attributo dinamico \
+   <br/>\
+   <br/>Esempio di uno script di ricalcolo che utilizza la mappa dynamicAttributes: \
+   <br/>\
+   <br/><code>if (dynamicAttributes['PassengerNumberOfSeats'] > 9) return 'Autobus' else return 'Passeggero'</code> \
+   <br/>\
+   <br/>Esempio di uno script di ricalcolo che utilizza la classe EntityValues: \
+   <br/>\
+   <br/><code>importa io.jmix.core.entity.EntityValues;\
+   <br/>\
+   <br/>if(EntityValues.getValue(entity,"+PassengerNumberofseats") > 9) return 'Autobus' else return 'Passeggero'</code> \
+   <br/>\
+   <br/>Ogni volta che il valore di uno degli attributi della lista Atributes dipende da viene modificato, lo script verrà eseguito.
+io.jmix.auditui.screen.entitylog/entityScreenAccessDeniedMessage=Accesso negato per schermata entità. Aggiungi autorizzazioni per aprire lo schermo.
+
+# AttributeEnumerationScreen
+io.jmix.dynattrui.screen.categoryattr/enumerationScreen.caption=Editor di enumerazione
+io.jmix.dynattrui.screen.categoryattr/localizationBox.caption=Localizzazione
+io.jmix.dynattrui.screen.categoryattr/localizedEnumValuesDataGrid.add=Aggiungi
+
+# AttributeLocalizationFragment
+io.jmix.dynattrui.screen.localization/localizedValuesDataGrid.columnDescription=Fai doppio clic per modificare il valore
+
+# AttributeLocationFragment
+io.jmix.dynattrui.screen.location/columnsCountLookupField.caption=Conteggio colonne
+io.jmix.dynattrui.screen.location/saveConfigurationBtn.caption=Salva configurazione
+io.jmix.dynattrui.screen.location/sourceDataGrid.sourceColumn.caption=Attributi
+io.jmix.dynattrui.screen.l ocation/targetDataGrid.column.caption=Colonna
+
+# TargetScreenComponent
+io.jmix.dynattrui.impl.model/TargetScreenComponent.screen=Schermo
+io.jmix.dynattrui.impl.model/TargetScreenComponent.component=ID componente
+
+# AttributeLocalizedValue
+io.jmix.dynattrui.impl.model/AttributeLocalizedValue.name=Nome
+io.jmix.dynattrui.impl.model/AttributeLocalizedValue.description=Descrizione
+io.jmix.dynattrui.impl.model/AttributeLocalizedValue.language=Lingua
+io.jmix.dynattrui.impl.model/AttributeLocalizedValue.locale=Locale
+
+# AttributeLocalizedEnumValue
+io.jmix.dynattrui.impl.model/AttributeLocalizedEnumValue.value=Valore
+io.jmix.dynattrui.impl.model/AttributeLocalizedEnumValue.localizedValues=Valori localizzati
+
+io.jmix.dynattrui.panel/category=Categoria
